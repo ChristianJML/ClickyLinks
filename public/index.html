@@ -37,6 +37,7 @@
 <body>
     <div class="container">
         <h1>ClickyWords</h1>
+        <p class="slogan">Write actions people want to take.</p>
         <input type="text" id="textInput" placeholder="Enter text here">
         <button id="submitButton">Submit</button>
         <div class="response-box">
@@ -46,6 +47,12 @@
     </div>
 
     <script>
+        document.getElementById('textInput').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                document.getElementById('submitButton').click();
+            }
+        });
+
         document.getElementById('submitButton').addEventListener('click', async () => {
             const textInput = document.getElementById('textInput').value;
             const responseText = document.getElementById('responseText');
@@ -63,7 +70,7 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    responseText.textContent = data.response;
+                    responseText.innerHTML = data.response;
                 } else {
                     responseText.textContent = 'Error: ' + (data.error || 'Something went wrong.');
                 }
