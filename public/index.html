@@ -19,6 +19,28 @@
             text-align: center;
             padding: 20px;
         }
+        input[type="text"] {
+            padding: 10px;
+            width: 70%;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #5f7fbf;
+            background-color: #2a3a5a;
+            color: white;
+        }
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff; /* Blue */
+            color: white;
+            cursor: pointer;
+            font-size: 1em;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
         .response-box {
             background-color: #3f5f9a; /* Lighter blue */
             padding: 15px;
@@ -32,6 +54,76 @@
         p {
             font-size: 1.2em;
         }
+        /* Modal Styles */
+        .modal {
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+        .modal-content {
+            background-color: #1a2a4a; /* Dark blue */
+            margin: auto; /* Centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 30%; /* Could be adjusted */
+            border-radius: 8px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            overflow-y: auto;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close-button:hover,
+        .close-button:focus {
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        .control-group label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        .control-group h4 {
+            margin-bottom: 10px;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin-top: 5px;
+        }
+        .response-box ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .response-box li {
+            margin-bottom: 10px;
+        }
+        .response-box li a {
+            display: inline;
+            color: #007bff; /* Link color */
+            text-decoration: underline;
+        }
+        .response-box li a:hover {
+            color: #0056b3;
+        }
     </style>
 </head>
 <body>
@@ -40,13 +132,79 @@
         <p class="slogan">Write actions people want to take.</p>
         <input type="text" id="textInput" placeholder="Enter text here">
         <button id="submitButton">Submit</button>
+        <button id="addDetailsButton">Add Extra Detail</button>
         <div class="response-box">
             <h2>Response</h2>
             <p id="responseText"></p>
         </div>
     </div>
 
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h3>Extra Details</h3>
+            <div class="control-group">
+                <label for="numSuggestions">Number of Suggestions: <span id="numSuggestionsValue">1</span></label>
+                <input type="range" id="numSuggestions" min="1" max="5" value="1">
+            </div>
+            <div class="control-group">
+                <h4>Tone Controls</h4>
+                <label for="playfulProfessional">Playful Professional</label>
+                <input type="range" id="playfulProfessional" min="-5" max="5" value="0">
+                <label for="casualFormal">Casual Formal</label>
+                <input type="range" id="casualFormal" min="-5" max="5" value="0">
+                <label for="friendlyAuthoritative">Friendly Authoritative</label>
+                <input type="range" id="friendlyAuthoritative" min="-5" max="5" value="0">
+            </div>
+            <div class="control-group">
+                <label for="length">Short & Punchy Long & Descriptive</label>
+                <input type="range" id="length" min="-5" max="5" value="0">
+            </div>
+            <button id="applyDetailsButton">Apply Details</button>
+        </div>
+    </div>
+
     <script>
+        const textInput = document.getElementById('textInput');
+        const submitButton = document.getElementById('submitButton');
+        const addDetailsButton = document.getElementById('addDetailsButton');
+        const responseText = document.getElementById('responseText');
+        const detailModal = document.getElementById('detailModal');
+        const closeButton = detailModal.querySelector('.close-button');
+        const applyDetailsButton = document.getElementById('applyDetailsButton');
+
+        const numSuggestionsSlider = document.getElementById('numSuggestions');
+        const numSuggestionsValue = document.getElementById('numSuggestionsValue');
+        const playfulProfessionalSlider = document.getElementById('playfulProfessional');
+        const casualFormalSlider = document.getElementById('casualFormal');
+        const friendlyAuthoritativeSlider = document.getElementById('friendlyAuthoritative');
+        const lengthSlider = document.getElementById('length');
+
+        // Update slider value displays
+        numSuggestionsSlider.oninput = () => { numSuggestionsValue.textContent = numSuggestionsSlider.value; };
+
+        // Open the modal
+        addDetailsButton.addEventListener('click', () => {
+            detailModal.style.display = 'block';
+        });
+
+        // Close the modal
+        closeButton.addEventListener('click', () => {
+            detailModal.style.display = 'none';
+        });
+
+        // Close the modal if clicked outside
+        window.addEventListener('click', (event) => {
+            if (event.target == detailModal) {
+                detailModal.style.display = 'none';
+            }
+        });
+
+        applyDetailsButton.addEventListener('click', () => {
+            // Here you would capture the values and pass them to your main logic
+            detailModal.style.display = 'none'; // Close modal after applying
+        });
+
         document.getElementById('textInput').addEventListener('keydown', (event) => {
             if (event.key === 'Enter') {
                 document.getElementById('submitButton').click();
@@ -58,19 +216,39 @@
             const responseText = document.getElementById('responseText');
             responseText.textContent = 'Thinking...';
 
+            const requestBody = {
+                message: textInput,
+                numSuggestions: numSuggestionsSlider.value,
+                playfulProfessional: playfulProfessionalSlider.value,
+                casualFormal: casualFormalSlider.value,
+                friendlyAuthoritative: friendlyAuthoritativeSlider.value,
+                length: lengthSlider.value,
+            };
+
             try {
                 const response = await fetch('/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ message: textInput })
+                    body: JSON.stringify(requestBody)
                 });
 
                 const data = await response.json();
 
                 if (response.ok) {
-                    responseText.innerHTML = data.response;
+                    responseText.innerHTML = ''; // Clear previous responses
+                    if (data.response && Array.isArray(data.response)) {
+                        const ul = document.createElement('ul');
+                        data.response.forEach(suggestion => {
+                            const li = document.createElement('li');
+                            li.innerHTML = suggestion;
+                            ul.appendChild(li);
+                        });
+                        responseText.appendChild(ul);
+                    } else {
+                        responseText.innerHTML = data.response;
+                    }
                 } else {
                     responseText.textContent = 'Error: ' + (data.error || 'Something went wrong.');
                 }
