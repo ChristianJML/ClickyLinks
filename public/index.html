@@ -133,9 +133,13 @@
         <input type="text" id="textInput" placeholder="Enter text here">
         <button id="submitButton">Submit</button>
         <button id="addDetailsButton">Add Extra Detail</button>
-        <div class="response-box">
-            <h2>Response</h2>
-            <p id="responseText"></p>
+        <div class="response-box" id="chatGPTResponseBox">
+            <h2>ChatGPT Response</h2>
+            <p id="chatGPTresponseText"></p>
+        </div>
+        <div class="response-box" id="claudeResponseBox" style="margin-top: 20px;">
+            <h2>Claude Response</h2>
+            <p id="claudeResponseText"></p>
         </div>
     </div>
 
@@ -160,6 +164,22 @@
                 <label for="length">Short & Punchy Long & Descriptive</label>
                 <input type="range" id="length" min="-5" max="5" value="0">
             </div>
+            <div class="control-group">
+                <h4>Context Controls</h4>
+                <label for="companyType">Company Type / Industry:</label>
+                <input type="text" id="companyType" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                <label for="whatCompanyDoes">What the company does:</label>
+                <input type="text" id="whatCompanyDoes" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                <label for="targetAudience">Target Audience:</label>
+                <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+            </div>
+            <div class="control-group">
+                <h4>⚙ Advanced Controls</h4>
+                <label for="banWords">Ban words (comma-separated):</label>
+                <input type="text" id="banWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                <label for="keepWords">Keep words (comma-separated):</label>
+                <input type="text" id="keepWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+            </div>
             <button id="applyDetailsButton">Apply Details</button>
         </div>
     </div>
@@ -168,7 +188,9 @@
         const textInput = document.getElementById('textInput');
         const submitButton = document.getElementById('submitButton');
         const addDetailsButton = document.getElementById('addDetailsButton');
-        const responseText = document.getElementById('responseText');
+        const chatGPTResponseText = document.getElementById('chatGPTresponseText');
+        const claudeResponseText = document.getElementById('claudeResponseText');
+        // const geminiResponseText = document.getElementById('geminiResponseText'); // Removed Gemini reference
         const detailModal = document.getElementById('detailModal');
         const closeButton = detailModal.querySelector('.close-button');
         const applyDetailsButton = document.getElementById('applyDetailsButton');
@@ -179,6 +201,13 @@
         const casualFormalSlider = document.getElementById('casualFormal');
         const friendlyAuthoritativeSlider = document.getElementById('friendlyAuthoritative');
         const lengthSlider = document.getElementById('length');
+
+        const companyTypeInput = document.getElementById('companyType');
+        const whatCompanyDoesTextarea = document.getElementById('whatCompanyDoes');
+        const targetAudienceInput = document.getElementById('targetAudience');
+
+        const banWordsInput = document.getElementById('banWords');
+        const keepWordsInput = document.getElementById('keepWords');
 
         // Update slider value displays
         numSuggestionsSlider.oninput = () => { numSuggestionsValue.textContent = numSuggestionsSlider.value; };
@@ -213,8 +242,13 @@
 
         document.getElementById('submitButton').addEventListener('click', async () => {
             const textInput = document.getElementById('textInput').value;
-            const responseText = document.getElementById('responseText');
-            responseText.textContent = 'Thinking...';
+            const chatGPTResponseText = document.getElementById('chatGPTresponseText');
+            const claudeResponseText = document.getElementById('claudeResponseText');
+            // const geminiResponseText = document.getElementById('geminiResponseText'); // Removed Gemini reference
+
+            chatGPTResponseText.textContent = 'Thinking...';
+            claudeResponseText.textContent = 'Thinking...';
+            // geminiResponseText.textContent = 'Thinking...'; // Removed Gemini reference
 
             const requestBody = {
                 message: textInput,
@@ -223,10 +257,16 @@
                 casualFormal: casualFormalSlider.value,
                 friendlyAuthoritative: friendlyAuthoritativeSlider.value,
                 length: lengthSlider.value,
+                companyType: companyTypeInput.value,
+                whatCompanyDoes: whatCompanyDoesTextarea.value,
+                targetAudience: targetAudienceInput.value,
+                banWords: banWordsInput.value,
+                keepWords: keepWordsInput.value,
             };
 
             try {
-                const response = await fetch('/chat', {
+                // Fetch from ChatGPT API
+                const chatGPTResponse = await fetch('/chat', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -234,27 +274,61 @@
                     body: JSON.stringify(requestBody)
                 });
 
-                const data = await response.json();
+                const chatGPTData = await chatGPTResponse.json();
 
-                if (response.ok) {
-                    responseText.innerHTML = ''; // Clear previous responses
-                    if (data.response && Array.isArray(data.response)) {
+                if (chatGPTResponse.ok) {
+                    chatGPTResponseText.innerHTML = ''; // Clear previous responses
+                    if (chatGPTData.response && Array.isArray(chatGPTData.response)) {
                         const ul = document.createElement('ul');
-                        data.response.forEach(suggestion => {
+                        chatGPTData.response.forEach(suggestion => {
                             const li = document.createElement('li');
                             li.innerHTML = suggestion;
                             ul.appendChild(li);
                         });
-                        responseText.appendChild(ul);
+                        chatGPTResponseText.appendChild(ul);
                     } else {
-                        responseText.innerHTML = data.response;
+                        chatGPTResponseText.innerHTML = chatGPTData.response;
                     }
                 } else {
-                    responseText.textContent = 'Error: ' + (data.error || 'Something went wrong.');
+                    chatGPTResponseText.textContent = 'Error: ' + (chatGPTData.error || 'Something went wrong with ChatGPT.');
                 }
             } catch (error) {
-                responseText.textContent = 'Network Error: ' + error.message;
+                chatGPTResponseText.textContent = 'Network Error (ChatGPT): ' + error.message;
             }
+
+            try {
+                // Fetch from Claude API
+                const claudeResponse = await fetch('/claude-chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const claudeData = await claudeResponse.json();
+
+                if (claudeResponse.ok) {
+                    claudeResponseText.innerHTML = ''; // Clear previous responses
+                    if (claudeData.response && Array.isArray(claudeData.response)) {
+                        const ul = document.createElement('ul');
+                        claudeData.response.forEach(suggestion => {
+                            const li = document.createElement('li');
+                            li.innerHTML = suggestion;
+                            ul.appendChild(li);
+                        });
+                        claudeResponseText.appendChild(ul);
+                    } else {
+                        claudeResponseText.innerHTML = claudeData.response;
+                    }
+                } else {
+                    claudeResponseText.textContent = 'Error: ' + (claudeData.error || 'Something went wrong with Claude.');
+                }
+            } catch (error) {
+                claudeResponseText.textContent = 'Network Error (Claude): ' + error.message;
+            }
+
+            // Removed Gemini API fetch call and related error handling
         });
     </script>
 </body>
