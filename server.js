@@ -7,14 +7,14 @@ const Anthropic = require('@anthropic-ai/sdk');
 const app = express();
 const port = 5001; // This should match the port in your frontend fetch request
 
-// Initialize OpenAI client (replace with your actual API key or environment variable)
-// It's highly recommended to use environment variables for API keys in a production environment.
-// For example: const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }); // Use environment variable
+// Initialize OpenAI client. IMPORTANT: For production, use environment variables (e.g., process.env.OPENAI_API_KEY).
+// For local development, create a .env file and add OPENAI_API_KEY="your_key_here". DO NOT COMMIT .env TO GIT.
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Initialize Anthropic client
+// Initialize Anthropic client. IMPORTANT: For production, use environment variables (e.g., process.env.ANTHROPIC_API_KEY).
+// For local development, create a .env file and add ANTHROPIC_API_KEY="your_key_here". DO NOT COMMIT .env TO GIT.
 const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY, // Use environment variable
+  apiKey: process.env.ANTHROPIC_API_KEY
 });
 
 // Removed Google Gemini client initialization
