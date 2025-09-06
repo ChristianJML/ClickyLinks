@@ -10,11 +10,11 @@ const port = 5001; // This should match the port in your frontend fetch request
 // Initialize OpenAI client (replace with your actual API key or environment variable)
 // It's highly recommended to use environment variables for API keys in a production environment.
 // For example: const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-const openai = new OpenAI({ apiKey: "APIKEY" }); // Replace with your actual API key
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY }); // Use environment variable
 
 // Initialize Anthropic client
 const anthropic = new Anthropic({
-  apiKey: "APIKEY", // Replace with your actual Claude API key
+  apiKey: process.env.ANTHROPIC_API_KEY, // Use environment variable
 });
 
 // Removed Google Gemini client initialization
@@ -38,7 +38,7 @@ app.post('/chat', async (req, res) => {
     }
 
     try {
-        let systemContent = "You are a helpful assistant. Your task is to rephrase user-provided text, removing 'click here' and similar phrases, and replacing them with a more engaging call to action. For each rephrased suggestion, you MUST identify the *exact* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. For example: 'Discover new features [Explore more].' or 'Your free guide is ready to [Download here].' Do not include any accompanying URL or additional markdown link formatting.";
+        let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
 
         if (numSuggestions) {
             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
@@ -122,7 +122,7 @@ app.post('/claude-chat', async (req, res) => {
     }
 
     try {
-        let systemContent = "You are a helpful assistant. When the user provides text, rephrase it to remove any instances of 'click here' and replace it with an appropriate alternative call to action. For each suggestion, clearly identify the core call to action (e.g., 'download now', 'learn more', 'get started') and enclose *only that specific phrase* within square brackets. The rest of the suggestion text should not be in brackets. For example: 'Discover our new features [Explore more].' or 'Your free guide is ready to [Download here].' Do not include any accompanying URL or additional markdown link formatting.";
+        let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
 
         if (numSuggestions) {
             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
