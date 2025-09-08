@@ -40,6 +40,7 @@ app.post('/chat', async (req, res) => {
 
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
+        systemContent += ` Never use the '—' character in your responses.`;
 
         if (numSuggestions) {
             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
@@ -86,9 +87,10 @@ app.post('/chat', async (req, res) => {
             ]
         });
         const chatResponse = completion.choices[0].message.content;
+        const cleanedChatResponse = chatResponse.replace(/—/g, ''); // Remove em dash
         
         // Post-process the ChatGPT response to extract and convert bracketed text into an HTML link for each suggestion
-        const suggestionMatches = chatResponse.match(/\d+\.\s*(.*?)(?=\d+\.\s*|$)/gs);
+        const suggestionMatches = cleanedChatResponse.match(/\d+\.\s*(.*?)(?=\d+\.\s*|$)/gs);
         let suggestions = [];
 
         if (suggestionMatches) {
@@ -124,6 +126,7 @@ app.post('/claude-chat', async (req, res) => {
 
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
+        systemContent += ` Never use the '—' character in your responses.`;
 
         if (numSuggestions) {
             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
@@ -179,9 +182,10 @@ app.post('/claude-chat', async (req, res) => {
         });
 
         const chatResponse = claudeResponse.content[0].text;
+        const cleanedChatResponse = chatResponse.replace(/—/g, ''); // Remove em dash
         
         // Post-process the Claude response to extract and convert bracketed text into an HTML link for each suggestion
-        const suggestionMatches = chatResponse.match(/\d+\.\s*(.*?)(?=\d+\.\s*|$)/gs);
+        const suggestionMatches = cleanedChatResponse.match(/\d+\.\s*(.*?)(?=\d+\.\s*|$)/gs);
         let suggestions = [];
 
         if (suggestionMatches) {
