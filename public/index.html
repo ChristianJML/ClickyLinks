@@ -120,6 +120,60 @@
             width: 100%;
             margin-top: 5px;
         }
+        /* Styles for the custom switch */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Add some space between the text and the switch */
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 20px; /* Rounded slider */
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #007bff;
+        }
+        input:focus + .slider {
+            box-shadow: 0 0 1px #007bff;
+        }
+        input:checked + .slider:before {
+            -webkit-transform: translateX(20px);
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+        }
         .response-box ul,
         .response-box p {
             font-size: 1em; /* Ensure consistent font size */
@@ -152,7 +206,7 @@
         <button id="submitButton">Submit</button>
         <button id="addDetailsButton">Add Extra Detail</button>
         <div class="response-box" id="chatGPTResponseBox">
-            <h2>ChatGPT Response <span class="model-name">(gpt-3.5-turbo)</span></h2>
+            <h2>ChatGPT Response <span class="model-name">(gpt-4)</span></h2>
             <p id="chatGPTresponseText"></p>
         </div>
         <div class="response-box" id="claudeResponseBox" style="margin-top: 20px;">
@@ -168,27 +222,35 @@
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            <h3>Extra Details</h3>
+            <h3>Add extra detail</h3>
             <div class="control-group">
                 <label for="numSuggestions">Number of Suggestions: <span id="numSuggestionsValue">1</span></label>
                 <input type="range" id="numSuggestions" min="1" max="3" value="1">
             </div>
             <div class="control-group">
                 <h4>Tone Controls</h4>
-                <label for="playfulProfessional">Playful Professional</label>
+                <label for="playfulProfessional"><span>Playful</span><span>Professional</span></label>
                 <input type="range" id="playfulProfessional" min="-5" max="5" value="-1">
             </div>
             <div class="control-group">
-                <label for="length">Short & Punchy Long & Descriptive</label>
+                <label for="length"><span>Short & Punchy</span><span>Long & Descriptive</span></label>
                 <input type="range" id="length" min="-5" max="5" value="-5">
             </div>
             <div class="control-group">
+                <div class="switch-container">
+                    <label for="includeExplanation">Include explanations</label>
+                    <label class="switch">
+                        <input type="checkbox" id="includeExplanation" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="control-group">
                 <h4>Context Controls</h4>
-                <label for="companyType">Company Type / Industry:</label>
-                <input type="text" id="companyType" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                
                 <label for="whatCompanyDoes">What the company does:</label>
                 <input type="text" id="whatCompanyDoes" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-                <label for="targetAudience">Target Audience:</label>
+                <label for="targetAudience">Target audience</label>
                 <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
             </div>
             <div class="control-group">
@@ -198,7 +260,7 @@
                 <label for="keepWords">Keep words (comma-separated):</label>
                 <input type="text" id="keepWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
             </div>
-            <button id="applyDetailsButton">Apply Details</button>
+            <button id="applyDetailsButton">Apply</button>
         </div>
     </div>
 
@@ -311,8 +373,9 @@
             const playfulProfessionalSlider = document.getElementById('playfulProfessional');
             
             const lengthSlider = document.getElementById('length');
+            const includeExplanationCheckbox = document.getElementById('includeExplanation');
 
-            const companyTypeInput = document.getElementById('companyType');
+            
             const whatCompanyDoesTextarea = document.getElementById('whatCompanyDoes');
             const targetAudienceInput = document.getElementById('targetAudience');
 
@@ -365,7 +428,8 @@
                     numSuggestions: numSuggestionsSlider.value,
                     playfulProfessional: playfulProfessionalSlider.value,
                     length: lengthSlider.value,
-                    companyType: companyTypeInput.value,
+                    includeExplanation: includeExplanationCheckbox.checked,
+                    
                     whatCompanyDoes: whatCompanyDoesTextarea.value,
                     targetAudience: targetAudienceInput.value,
                     banWords: banWordsInput.value,

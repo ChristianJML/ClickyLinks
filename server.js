@@ -33,15 +33,26 @@ app.listen(port, () => {
 // ChatGPT endpoint
 app.post('/chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, length, companyType, whatCompanyDoes, targetAudience, banWords, keepWords } = req.body;
+    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
     }
 
     try {
-        let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
-        systemContent += ` Never use the '—' character in your responses. After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
+        let baseSystemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
+        
+        let systemContent = baseSystemContent;
+
+        if (keepWords) {
+            systemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + systemContent;
+        }
+
+        systemContent += ` Never use the '—' character in your responses.`;
+
+        if (includeExplanation) {
+            systemContent += ` After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
+        }
 
         if (numSuggestions) {
             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
@@ -56,9 +67,6 @@ app.post('/chat', async (req, res) => {
         if (length) {
             systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'ENSURE the response is long and descriptive'}.`;
         }
-        if (companyType) {
-            systemContent += ` The company operates in the ${companyType} industry.`;
-        }
         if (whatCompanyDoes) {
             systemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
         }
@@ -68,12 +76,9 @@ app.post('/chat', async (req, res) => {
         if (banWords) {
             systemContent += ` Absolutely do not include any of the following words in your suggestions: ${banWords}.`;
         }
-        if (keepWords) {
-            systemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
-        }
 
         const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo", // Or "gpt-4" depending on your preference and access
+            model: "gpt-4", // Updated to gpt-4 for better instruction adherence
             messages: [
                 { role: "system", content: systemContent },
                 { role: "user", content: userMessage }
@@ -115,7 +120,7 @@ app.post('/chat', async (req, res) => {
 // Claude endpoint
 app.post('/claude-chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, length, companyType, whatCompanyDoes, targetAudience, banWords, keepWords } = req.body;
+    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
@@ -123,7 +128,17 @@ app.post('/claude-chat', async (req, res) => {
 
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
-        systemContent += ` Never use the '—' character in your responses. After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
+        
+        // Remove aggressive keepWords prepending
+        // if (keepWords) {
+        //     systemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + systemContent;
+        // }
+
+        systemContent += ` Never use the '—' character in your responses.`;
+        
+        if (includeExplanation) {
+            systemContent += ` After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
+        }
 
         if (numSuggestions) {
             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
@@ -138,9 +153,7 @@ app.post('/claude-chat', async (req, res) => {
         if (length) {
             systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'long and descriptive'}.`;
         }
-        if (companyType) {
-            systemContent += ` The company operates in the ${companyType} industry.`;
-        }
+        
         if (whatCompanyDoes) {
             systemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
         }
@@ -207,7 +220,7 @@ app.post('/claude-chat', async (req, res) => {
 // Gemini endpoint
 app.post('/gemini-chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, length, companyType, whatCompanyDoes, targetAudience, banWords, keepWords } = req.body;
+    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
@@ -215,7 +228,17 @@ app.post('/gemini-chat', async (req, res) => {
 
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
-        systemContent += ` Never use the '—' character in your responses. After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
+        
+        // Remove aggressive keepWords prepending
+        // if (keepWords) {
+        //     systemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + systemContent;
+        // }
+
+        systemContent += ` Never use the '—' character in your responses.`;
+        
+        if (includeExplanation) {
+            systemContent += ` After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
+        }
 
         if (numSuggestions) {
             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
@@ -230,9 +253,7 @@ app.post('/gemini-chat', async (req, res) => {
         if (length) {
             systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'ENSURE the response is long and descriptive'}.`;
         }
-        if (companyType) {
-            systemContent += ` The company operates in the ${companyType} industry.`;
-        }
+        
         if (whatCompanyDoes) {
             systemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
         }
