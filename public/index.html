@@ -56,7 +56,9 @@
         }
         /* Modal Styles */
         .modal {
-            display: none; /* Hidden by default */
+            display: none; /* Hidden by default, JavaScript will set to flex when opened */
+            align-items: center; /* Center content vertically */
+            justify-content: center; /* Center content horizontally */
             position: fixed; /* Stay in place */
             z-index: 1; /* Sit on top */
             left: 0;
@@ -79,6 +81,15 @@
             height: 100%;
             overflow-y: auto;
             box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+        }
+        #ctaEssayModal .modal-content {
+            width: 70%;
+            max-width: 800px;
+            position: relative; /* Override absolute positioning from general .modal-content */
+            right: auto; /* Reset right position */
+            top: auto; /* Reset top position */
+            height: auto; /* Allow content to define height */
+            max-height: 90vh; /* Set max height for scrollability */
         }
         .close-button {
             color: #aaa;
@@ -136,7 +147,7 @@
 <body>
     <div class="container">
         <h1>ClickyWords</h1>
-        <p class="slogan">Write actions people want to take.</p>
+        <p class="slogan">Write actions people want to take. <a href="#" id="learnWhyLink">Learn why</a></p>
         <input type="text" id="textInput" placeholder="Enter text here">
         <button id="submitButton">Submit</button>
         <button id="addDetailsButton">Add Extra Detail</button>
@@ -191,197 +202,314 @@
         </div>
     </div>
 
+    <div id="ctaEssayModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button cta-essay-close">&times;</span>
+            <article class="cta-essay" lang="en">
+                <header>
+                    <h2>'Click Here' as a Call to Action: Effective or Not?</h2>
+                    <p><em>A short research essay by ChatGPT</em></p>
+                </header>
+
+                <section>
+                    <p>
+                    Across website types (e-commerce, SaaS, nonprofit, content), “click here” is generally a poor call to action (CTA).
+                    It underperforms more specific alternatives on conversion, fails accessibility best practices, weakens SEO signals,
+                    and degrades overall UX.
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Conversion (CRO)</h2>
+                    <p>
+                    Effective CTAs communicate the action <strong>and</strong> the value: “Add to cart,” “Start free trial,”
+                    “Download the report.” Generic commands like “click here” don’t tell users what happens next or why it matters,
+                    which reduces motivation. See Nielsen Norman Group on meaningful link labels:
+                    <a href="https://www.nngroup.com/articles/better-link-labels/" rel="noopener">Better Link Labels</a>.
+                    </p>
+                </section>
+
+                <section>
+                    <h2>Accessibility</h2>
+                    <p>
+                    Screen-reader and keyboard users often navigate by reading a list of links out of context. Repeated “click here”
+                    provides no clue about destination or purpose. Accessibility standards require (and guidance strongly recommends)
+                    descriptive link text:
+                    <a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context.html" rel="noopener">WCAG 2.4.4</a>,
+                    <a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-link-only.html" rel="noopener">WCAG 2.4.9</a>,
+                    <a href="https://www.section508.gov/blog/accessibility-bytes/descriptive-links-and-hypertext/" rel="noopener">Section 508 blog</a>,
+                    <a href="https://www.section508.gov/develop/guide-accessible-web-design-development/" rel="noopener">Section 508 guide</a>,
+                    and
+                    <a href="https://www.gov.uk/guidance/content-design/links" rel="noopener">GOV.UK Content Design</a>.
+                    </p>
+                </section>
+
+                <section>
+                    <h2>SEO</h2>
+                    <p>
+                    Search engines use anchor text to understand a page’s topic. Google lists “Click here” and “Read more”
+                    as <em>bad (too generic)</em> examples and recommends concise, descriptive anchors:
+                    <a href="https://developers.google.com/search/docs/crawling-indexing/links-crawlable" rel="noopener">Google Search Central: Write good anchor text</a>.
+                    SEO guidance concurs: avoid generic anchors and tell users what the link is about
+                    (<a href="https://yoast.com/what-is-anchor-text/" rel="noopener">Yoast</a>).
+                    </p>
+                </section>
+
+                <section>
+                    <h2>User Experience (UX)</h2>
+                    <p>
+                    Labels need “information scent”—a clear cue about the outcome. “Click here” forces readers to hunt for context,
+                    slowing scanning and eroding trust. See
+                    <a href="https://www.nngroup.com/articles/learn-more-links/" rel="noopener">NN/g: “Learn more” is the new “Click here”</a>
+                    and
+                    <a href="https://www.nngroup.com/articles/better-link-labels/" rel="noopener">NN/g: Better Link Labels</a>.
+                    </p>
+                </section>
+
+                <section>
+                    <h2>What to Use Instead</h2>
+                    <ul>
+                    <li><strong>E-commerce:</strong> “Add to cart,” “Buy now,” “Shop new arrivals.”</li>
+                    <li><strong>SaaS:</strong> “Start free trial,” “Get started,” “Request a demo.”</li>
+                    <li><strong>Content/Education:</strong> “Read the full article: [Title],” “Download the 2025 report.”</li>
+                    <li><strong>Nonprofit/Public sector:</strong> “Donate now,” “Join our newsletter,” “View eligibility criteria.”</li>
+                    </ul>
+                    <p>The principle: make the action and destination unmistakable to improve inclusivity, SEO, and conversions.</p>
+                </section>
+
+                <footer>
+                    <h3>Key Sources</h3>
+                    <ul>
+                    <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context.html" rel="noopener">WCAG 2.4.4</a></li>
+                    <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-link-only.html" rel="noopener">WCAG 2.4.9</a></li>
+                    <li><a href="https://www.section508.gov/blog/accessibility-bytes/descriptive-links-and-hypertext/" rel="noopener">Section 508: Descriptive links</a></li>
+                    <li><a href="https://www.section508.gov/develop/guide-accessible-web-design-development/" rel="noopener">Section 508: Accessible design guide</a></li>
+                    <li><a href="https://developers.google.com/search/docs/crawling-indexing/links-crawlable" rel="noopener">Google Search Central: Anchor text</a></li>
+                    <li><a href="https://www.nngroup.com/articles/learn-more-links/" rel="noopener">NN/g: Learn More links</a></li>
+                    <li><a href="https://www.nngroup.com/articles/better-link-labels/" rel="noopener">NN/g: Better link labels</a></li>
+                    <li><a href="https://www.gov.uk/guidance/content-design/links" rel="noopener">GOV.UK Content Design: Links</a></li>
+                    <li><a href="https://yoast.com/what-is-anchor-text/" rel="noopener">Yoast: Anchor text</a></li>
+                    </ul>
+                </footer>
+            </article>
+        </div>
+    </div>
     <script>
-        const textInput = document.getElementById('textInput');
-        const submitButton = document.getElementById('submitButton');
-        const addDetailsButton = document.getElementById('addDetailsButton');
-        const chatGPTResponseText = document.getElementById('chatGPTresponseText');
-        const claudeResponseText = document.getElementById('claudeResponseText');
-        const geminiResponseText = document.getElementById('geminiResponseText'); // Added Gemini reference
-        const detailModal = document.getElementById('detailModal');
-        const closeButton = detailModal.querySelector('.close-button');
-        const applyDetailsButton = document.getElementById('applyDetailsButton');
-
-        const numSuggestionsSlider = document.getElementById('numSuggestions');
-        const numSuggestionsValue = document.getElementById('numSuggestionsValue');
-        const playfulProfessionalSlider = document.getElementById('playfulProfessional');
-        
-        const lengthSlider = document.getElementById('length');
-
-        const companyTypeInput = document.getElementById('companyType');
-        const whatCompanyDoesTextarea = document.getElementById('whatCompanyDoes');
-        const targetAudienceInput = document.getElementById('targetAudience');
-
-        const banWordsInput = document.getElementById('banWords');
-        const keepWordsInput = document.getElementById('keepWords');
-
-        // Update slider value displays
-        numSuggestionsSlider.oninput = () => { numSuggestionsValue.textContent = numSuggestionsSlider.value; };
-
-        // Open the modal
-        addDetailsButton.addEventListener('click', () => {
-            detailModal.style.display = 'block';
-        });
-
-        // Close the modal
-        closeButton.addEventListener('click', () => {
-            detailModal.style.display = 'none';
-        });
-
-        // Close the modal if clicked outside
-        window.addEventListener('click', (event) => {
-            if (event.target == detailModal) {
-                detailModal.style.display = 'none';
-            }
-        });
-
-        applyDetailsButton.addEventListener('click', () => {
-            // Here you would capture the values and pass them to your main logic
-            detailModal.style.display = 'none'; // Close modal after applying
-        });
-
-        document.getElementById('textInput').addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                document.getElementById('submitButton').click();
-            }
-        });
-
-        document.getElementById('submitButton').addEventListener('click', async () => {
-            const textInput = document.getElementById('textInput').value;
+        document.addEventListener('DOMContentLoaded', () => {
+            const textInput = document.getElementById('textInput');
+            const submitButton = document.getElementById('submitButton');
+            const addDetailsButton = document.getElementById('addDetailsButton');
             const chatGPTResponseText = document.getElementById('chatGPTresponseText');
             const claudeResponseText = document.getElementById('claudeResponseText');
             const geminiResponseText = document.getElementById('geminiResponseText'); // Added Gemini reference
+            const detailModal = document.getElementById('detailModal');
+            const closeButton = detailModal.querySelector('.close-button');
+            const applyDetailsButton = document.getElementById('applyDetailsButton');
 
-            chatGPTResponseText.textContent = 'Thinking...';
-            claudeResponseText.textContent = 'Thinking...';
-            geminiResponseText.textContent = 'Thinking...'; // Added Gemini reference
+            const numSuggestionsSlider = document.getElementById('numSuggestions');
+            const numSuggestionsValue = document.getElementById('numSuggestionsValue');
+            const playfulProfessionalSlider = document.getElementById('playfulProfessional');
+            
+            const lengthSlider = document.getElementById('length');
 
-            const requestBody = {
-                message: textInput,
-                numSuggestions: numSuggestionsSlider.value,
-                playfulProfessional: playfulProfessionalSlider.value,
-                length: lengthSlider.value,
-                companyType: companyTypeInput.value,
-                whatCompanyDoes: whatCompanyDoesTextarea.value,
-                targetAudience: targetAudienceInput.value,
-                banWords: banWordsInput.value,
-                keepWords: keepWordsInput.value,
-            };
+            const companyTypeInput = document.getElementById('companyType');
+            const whatCompanyDoesTextarea = document.getElementById('whatCompanyDoes');
+            const targetAudienceInput = document.getElementById('targetAudience');
 
-            try {
-                // Fetch from ChatGPT API
-                const chatGPTResponse = await fetch('/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
+            const banWordsInput = document.getElementById('banWords');
+            const keepWordsInput = document.getElementById('keepWords');
 
-                const chatGPTData = await chatGPTResponse.json();
+            // Update slider value displays
+            numSuggestionsSlider.oninput = () => { numSuggestionsValue.textContent = numSuggestionsSlider.value; };
 
-                if (chatGPTResponse.ok) {
-                    chatGPTResponseText.innerHTML = ''; // Clear previous responses
-                    if (chatGPTData.response && Array.isArray(chatGPTData.response)) {
-                        const ul = document.createElement('ul');
-                        chatGPTData.response.forEach(suggestion => {
-                            const li = document.createElement('li');
-                            li.innerHTML = suggestion;
-                            ul.appendChild(li);
-                        });
-                        chatGPTResponseText.appendChild(ul);
-                    } else {
-                        chatGPTResponseText.innerHTML = chatGPTData.response;
-                    }
-                    if (chatGPTData.explanation) {
-                        const explanationP = document.createElement('p');
-                        explanationP.textContent = chatGPTData.explanation;
-                        explanationP.style.marginTop = '10px';
-                        chatGPTResponseText.appendChild(explanationP);
-                    }
-                } else {
-                    chatGPTResponseText.textContent = 'Error: ' + (chatGPTData.error || 'Something went wrong with ChatGPT.');
+            // Open the modal
+            addDetailsButton.addEventListener('click', () => {
+                detailModal.style.display = 'flex'; // Use flex to center the modal
+            });
+
+            // Close the modal
+            closeButton.addEventListener('click', () => {
+                detailModal.style.display = 'none';
+            });
+
+            // Close the modal if clicked outside
+            window.addEventListener('click', (event) => {
+                if (event.target == detailModal) {
+                    detailModal.style.display = 'none';
                 }
-            } catch (error) {
-                chatGPTResponseText.textContent = 'Network Error (ChatGPT): ' + error.message;
+            });
+
+            applyDetailsButton.addEventListener('click', () => {
+                // Here you would capture the values and pass them to your main logic
+                detailModal.style.display = 'none'; // Close modal after applying
+            });
+
+            document.getElementById('textInput').addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    document.getElementById('submitButton').click();
+                }
+            });
+
+            document.getElementById('submitButton').addEventListener('click', async () => {
+                const textInput = document.getElementById('textInput').value;
+                const chatGPTResponseText = document.getElementById('chatGPTresponseText');
+                const claudeResponseText = document.getElementById('claudeResponseText');
+                const geminiResponseText = document.getElementById('geminiResponseText'); // Added Gemini reference
+
+                chatGPTResponseText.textContent = 'Thinking...';
+                claudeResponseText.textContent = 'Thinking...';
+                geminiResponseText.textContent = 'Thinking...'; // Added Gemini reference
+
+                const requestBody = {
+                    message: textInput,
+                    numSuggestions: numSuggestionsSlider.value,
+                    playfulProfessional: playfulProfessionalSlider.value,
+                    length: lengthSlider.value,
+                    companyType: companyTypeInput.value,
+                    whatCompanyDoes: whatCompanyDoesTextarea.value,
+                    targetAudience: targetAudienceInput.value,
+                    banWords: banWordsInput.value,
+                    keepWords: keepWordsInput.value,
+                };
+
+                try {
+                    // Fetch from ChatGPT API
+                    const chatGPTResponse = await fetch('/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    const chatGPTData = await chatGPTResponse.json();
+
+                    if (chatGPTResponse.ok) {
+                        chatGPTResponseText.innerHTML = ''; // Clear previous responses
+                        if (chatGPTData.response && Array.isArray(chatGPTData.response)) {
+                            const ul = document.createElement('ul');
+                            chatGPTData.response.forEach(suggestion => {
+                                const li = document.createElement('li');
+                                li.innerHTML = suggestion;
+                                ul.appendChild(li);
+                            });
+                            chatGPTResponseText.appendChild(ul);
+                        } else {
+                            chatGPTResponseText.innerHTML = chatGPTData.response;
+                        }
+                        if (chatGPTData.explanation) {
+                            const explanationP = document.createElement('p');
+                            explanationP.textContent = chatGPTData.explanation;
+                            explanationP.style.marginTop = '10px';
+                            chatGPTResponseText.appendChild(explanationP);
+                        }
+                    } else {
+                        chatGPTResponseText.textContent = 'Error: ' + (chatGPTData.error || 'Something went wrong with ChatGPT.');
+                    }
+                } catch (error) {
+                    chatGPTResponseText.textContent = 'Network Error (ChatGPT): ' + error.message;
+                }
+
+                try {
+                    // Fetch from Claude API
+                    const claudeResponse = await fetch('/claude-chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    const claudeData = await claudeResponse.json();
+
+                    if (claudeResponse.ok) {
+                        claudeResponseText.innerHTML = ''; // Clear previous responses
+                        if (claudeData.response && Array.isArray(claudeData.response)) {
+                            const ul = document.createElement('ul');
+                            claudeData.response.forEach(suggestion => {
+                                const li = document.createElement('li');
+                                li.innerHTML = suggestion;
+                                ul.appendChild(li);
+                            });
+                            claudeResponseText.appendChild(ul);
+                        } else {
+                            claudeResponseText.innerHTML = claudeData.response;
+                        }
+                        if (claudeData.explanation) {
+                            const explanationP = document.createElement('p');
+                            explanationP.textContent = claudeData.explanation;
+                            explanationP.style.marginTop = '10px';
+                            claudeResponseText.appendChild(explanationP);
+                        }
+                    } else {
+                        claudeResponseText.textContent = 'Error: ' + (claudeData.error || 'Something went wrong with Claude.');
+                    }
+                } catch (error) {
+                    claudeResponseText.textContent = 'Network Error (Claude): ' + error.message;
+                }
+
+                try {
+                    // Fetch from Gemini API
+                    const geminiResponse = await fetch('/gemini-chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(requestBody)
+                    });
+
+                    const geminiData = await geminiResponse.json();
+
+                    if (geminiResponse.ok) {
+                        geminiResponseText.innerHTML = ''; // Clear previous responses
+                        if (geminiData.response && Array.isArray(geminiData.response)) {
+                            const ul = document.createElement('ul');
+                            geminiData.response.forEach(suggestion => {
+                                const li = document.createElement('li');
+                                li.innerHTML = suggestion;
+                                ul.appendChild(li);
+                            });
+                            geminiResponseText.appendChild(ul);
+                        } else {
+                            geminiResponseText.innerHTML = geminiData.response;
+                        }
+                        if (geminiData.explanation) {
+                            const explanationP = document.createElement('p');
+                            explanationP.textContent = geminiData.explanation;
+                            explanationP.style.marginTop = '10px';
+                            geminiResponseText.appendChild(explanationP);
+                        }
+                    } else {
+                        geminiResponseText.textContent = 'Error: ' + (geminiData.error || 'Something went wrong with Gemini.');
+                    }
+                } catch (error) {
+                    geminiResponseText.textContent = 'Network Error (Gemini): ' + error.message;
+                }
+            });
+            const learnWhyLink = document.getElementById('learnWhyLink');
+            if (learnWhyLink) {
+                learnWhyLink.addEventListener('click', (event) => {
+                    event.preventDefault(); // Prevent default link behavior
+                    document.getElementById('ctaEssayModal').style.display = 'flex'; // Use flex to center the modal
+                });
             }
 
-            try {
-                // Fetch from Claude API
-                const claudeResponse = await fetch('/claude-chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
+            const ctaEssayModal = document.getElementById('ctaEssayModal');
+            const ctaEssayCloseButton = ctaEssayModal.querySelector('.cta-essay-close');
+            if (ctaEssayCloseButton) {
+                ctaEssayCloseButton.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent click from bubbling up to window
+                    ctaEssayModal.style.display = 'none';
                 });
-
-                const claudeData = await claudeResponse.json();
-
-                if (claudeResponse.ok) {
-                    claudeResponseText.innerHTML = ''; // Clear previous responses
-                    if (claudeData.response && Array.isArray(claudeData.response)) {
-                        const ul = document.createElement('ul');
-                        claudeData.response.forEach(suggestion => {
-                            const li = document.createElement('li');
-                            li.innerHTML = suggestion;
-                            ul.appendChild(li);
-                        });
-                        claudeResponseText.appendChild(ul);
-                    } else {
-                        claudeResponseText.innerHTML = claudeData.response;
-                    }
-                    if (claudeData.explanation) {
-                        const explanationP = document.createElement('p');
-                        explanationP.textContent = claudeData.explanation;
-                        explanationP.style.marginTop = '10px';
-                        claudeResponseText.appendChild(explanationP);
-                    }
-                } else {
-                    claudeResponseText.textContent = 'Error: ' + (claudeData.error || 'Something went wrong with Claude.');
-                }
-            } catch (error) {
-                claudeResponseText.textContent = 'Network Error (Claude): ' + error.message;
             }
 
-            try {
-                // Fetch from Gemini API
-                const geminiResponse = await fetch('/gemini-chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(requestBody)
-                });
-
-                const geminiData = await geminiResponse.json();
-
-                if (geminiResponse.ok) {
-                    geminiResponseText.innerHTML = ''; // Clear previous responses
-                    if (geminiData.response && Array.isArray(geminiData.response)) {
-                        const ul = document.createElement('ul');
-                        geminiData.response.forEach(suggestion => {
-                            const li = document.createElement('li');
-                            li.innerHTML = suggestion;
-                            ul.appendChild(li);
-                        });
-                        geminiResponseText.appendChild(ul);
-                    } else {
-                        geminiResponseText.innerHTML = geminiData.response;
-                    }
-                    if (geminiData.explanation) {
-                        const explanationP = document.createElement('p');
-                        explanationP.textContent = geminiData.explanation;
-                        explanationP.style.marginTop = '10px';
-                        geminiResponseText.appendChild(explanationP);
-                    }
-                } else {
-                    geminiResponseText.textContent = 'Error: ' + (geminiData.error || 'Something went wrong with Gemini.');
+            // Close the modal if clicked outside
+            window.addEventListener('click', (event) => {
+                if (event.target == ctaEssayModal) {
+                    ctaEssayModal.style.display = 'none';
                 }
-            } catch (error) {
-                geminiResponseText.textContent = 'Network Error (Gemini): ' + error.message;
-            }
-        });
+            });
+        }); // End DOMContentLoaded
     </script>
 </body>
 </html>
