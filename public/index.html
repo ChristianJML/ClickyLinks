@@ -145,6 +145,10 @@
             <h2>Claude Response</h2>
             <p id="claudeResponseText"></p>
         </div>
+        <div class="response-box" id="geminiResponseBox" style="margin-top: 20px;">
+            <h2>Gemini Response</h2>
+            <p id="geminiResponseText"></p>
+        </div>
     </div>
 
     <div id="detailModal" class="modal">
@@ -190,7 +194,7 @@
         const addDetailsButton = document.getElementById('addDetailsButton');
         const chatGPTResponseText = document.getElementById('chatGPTresponseText');
         const claudeResponseText = document.getElementById('claudeResponseText');
-        // const geminiResponseText = document.getElementById('geminiResponseText'); // Removed Gemini reference
+        const geminiResponseText = document.getElementById('geminiResponseText'); // Added Gemini reference
         const detailModal = document.getElementById('detailModal');
         const closeButton = detailModal.querySelector('.close-button');
         const applyDetailsButton = document.getElementById('applyDetailsButton');
@@ -243,11 +247,11 @@
             const textInput = document.getElementById('textInput').value;
             const chatGPTResponseText = document.getElementById('chatGPTresponseText');
             const claudeResponseText = document.getElementById('claudeResponseText');
-            // const geminiResponseText = document.getElementById('geminiResponseText'); // Removed Gemini reference
+            const geminiResponseText = document.getElementById('geminiResponseText'); // Added Gemini reference
 
             chatGPTResponseText.textContent = 'Thinking...';
             claudeResponseText.textContent = 'Thinking...';
-            // geminiResponseText.textContent = 'Thinking...'; // Removed Gemini reference
+            geminiResponseText.textContent = 'Thinking...'; // Added Gemini reference
 
             const requestBody = {
                 message: textInput,
@@ -337,7 +341,43 @@
                 claudeResponseText.textContent = 'Network Error (Claude): ' + error.message;
             }
 
-            // Removed Gemini API fetch call and related error handling
+            try {
+                // Fetch from Gemini API
+                const geminiResponse = await fetch('/gemini-chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const geminiData = await geminiResponse.json();
+
+                if (geminiResponse.ok) {
+                    geminiResponseText.innerHTML = ''; // Clear previous responses
+                    if (geminiData.response && Array.isArray(geminiData.response)) {
+                        const ul = document.createElement('ul');
+                        geminiData.response.forEach(suggestion => {
+                            const li = document.createElement('li');
+                            li.innerHTML = suggestion;
+                            ul.appendChild(li);
+                        });
+                        geminiResponseText.appendChild(ul);
+                    } else {
+                        geminiResponseText.innerHTML = geminiData.response;
+                    }
+                    if (geminiData.explanation) {
+                        const explanationP = document.createElement('p');
+                        explanationP.textContent = geminiData.explanation;
+                        explanationP.style.marginTop = '10px';
+                        geminiResponseText.appendChild(explanationP);
+                    }
+                } else {
+                    geminiResponseText.textContent = 'Error: ' + (geminiData.error || 'Something went wrong with Gemini.');
+                }
+            } catch (error) {
+                geminiResponseText.textContent = 'Network Error (Gemini): ' + error.message;
+            }
         });
     </script>
 </body>

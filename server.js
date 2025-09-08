@@ -3,7 +3,7 @@ const express = require('express');
 const { OpenAI } = require('openai');
 const cors = require('cors');
 const Anthropic = require('@anthropic-ai/sdk');
-// const { GoogleGenerativeAI } = require("@google/generative-ai"); // Removed Gemini SDK import
+const { GoogleGenerativeAI } = require("@google/generative-ai"); // Added Gemini SDK import
 
 const app = express();
 const port = 5001; // This should match the port in your frontend fetch request
@@ -18,8 +18,9 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY
 });
 
-// Removed Google Gemini client initialization
-// const genAI = new GoogleGenerativeAI("APIKEY"); // Removed Gemini client initialization
+// Initialize Google Gemini client. IMPORTANT: For production, use environment variables (e.g., process.env.GOOGLE_API_KEY).
+// For local development, create a .env file and add GOOGLE_API_KEY="your_key_here". DO NOT COMMIT .env TO GIT.
+const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
 
 app.use(cors()); // Enable CORS for all routes
 app.use(express.json()); // Enable JSON body parsing
@@ -32,7 +33,7 @@ app.listen(port, () => {
 // ChatGPT endpoint
 app.post('/chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, casualFormal, friendlyAuthoritative, length, companyType, whatCompanyDoes, targetAudience, banWords, keepWords } = req.body;
+    const { numSuggestions, playfulProfessional, length, companyType, whatCompanyDoes, targetAudience, banWords, keepWords } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
@@ -114,7 +115,7 @@ app.post('/chat', async (req, res) => {
 // Claude endpoint
 app.post('/claude-chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, casualFormal, friendlyAuthoritative, length, companyType, whatCompanyDoes, targetAudience, banWords, keepWords } = req.body;
+    const { numSuggestions, playfulProfessional, length, companyType, whatCompanyDoes, targetAudience, banWords, keepWords } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
@@ -203,26 +204,80 @@ app.post('/claude-chat', async (req, res) => {
     }
 });
 
-// Removed Gemini endpoint
-// app.post('/gemini-chat', async (req, res) => {
-//     const userMessage = req.body.message;
-//     const { numSuggestions, playfulProfessional, casualFormal, friendlyAuthoritative, length, companyType, whatCompanyDoes, targetAudience, banWords, keepWords } = req.body;
+// Gemini endpoint
+app.post('/gemini-chat', async (req, res) => {
+    const userMessage = req.body.message;
+    const { numSuggestions, playfulProfessional, length, companyType, whatCompanyDoes, targetAudience, banWords, keepWords } = req.body;
 
-//     if (!userMessage) {
-//         return res.status(400).json({ error: 'No message provided' });
-//     }
+    if (!userMessage) {
+        return res.status(400).json({ error: 'No message provided' });
+    }
 
-//     try {
-//         let systemContent = "You are a helpful assistant. When the user provides text, rephrase it to remove any instances of 'click here' and replace it with an appropriate alternative call to action. For each suggestion, clearly identify the core call to action (e.g., 'download now', 'learn more', 'get started') and enclose *only that specific phrase* within square brackets. The rest of the suggestion text should not be in brackets. For example: 'Discover our new features [Explore more].' or 'Your free guide is ready to [Download here].' Do not include any accompanying URL or additional markdown link formatting.";
+    try {
+        let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
+        systemContent += ` Never use the '—' character in your responses. After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
 
-//         if (numSuggestions) {
-//             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
-//         }
-//         if (playfulProfessional) {
-//             systemContent += ` Adjust the tone: ${playfulProfessional < 0 ? 'more playful' : 'more professional'}.`;
-//         }
-//         if (casualFormal) {
-//             systemContent += ` Adjust the tone: ${casualFormal < 0 ? 'more casual' : 'more formal'}.`;
-//         }
-//         if (friendlyAuthoritative) {
-//             systemContent += `
+        if (numSuggestions) {
+            systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
+        }
+        if (playfulProfessional) {
+            systemContent += ` Adjust the tone: ${playfulProfessional < 0 ? 'more playful' : 'more professional'}.`;
+        } else if (playfulProfessional === 0) {
+            systemContent += ` Maintain a balanced, neutral tone between playful and professional.`;
+        }
+        
+        
+        if (length) {
+            systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'ENSURE the response is long and descriptive'}.`;
+        }
+        if (companyType) {
+            systemContent += ` The company operates in the ${companyType} industry.`;
+        }
+        if (whatCompanyDoes) {
+            systemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
+        }
+        if (targetAudience) {
+            systemContent += ` The target audience is ${targetAudience}.`;
+        }
+        if (banWords) {
+            systemContent += ` Absolutely do not include any of the following words in your suggestions: ${banWords}.`;
+        }
+        if (keepWords) {
+            systemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
+        }
+        
+        const model = genAI.getGenerativeModel({ model: "gemini-pro"}); // Using gemini-pro for text generation
+        const result = await model.generateContent(systemContent + "\nUser: " + userMessage);
+        const chatResponse = result.response.text();
+        const cleanedChatResponse = chatResponse.replace(/—/g, ''); // Remove em dash
+        
+        const explanationMatch = cleanedChatResponse.match(/Explanation:([\s\S]*)/);
+        const explanation = explanationMatch ? explanationMatch[1].trim() : '';
+        const suggestionsOnlyResponse = explanationMatch ? cleanedChatResponse.substring(0, explanationMatch.index).trim() : cleanedChatResponse;
+
+        // Post-process the Gemini response to extract and convert bracketed text into an HTML link for each suggestion
+        const suggestionMatches = suggestionsOnlyResponse.match(/\d+\.\s*(.*?)(?=\d+\.\s*|$)/gs);
+        let suggestions = [];
+
+        if (suggestionMatches) {
+            suggestions = suggestionMatches.map(match => {
+                let suggestionText = match.replace(/^\d+\.\s*/, '').trim();
+                return suggestionText.replace(/\[(.*?)\]/g, '<a href="#">$1</a>');
+            }).filter(s => s !== '');
+            // Trim suggestions to the requested number, if more are returned
+            if (numSuggestions && suggestions.length > parseInt(numSuggestions)) {
+                suggestions = suggestions.slice(0, parseInt(numSuggestions));
+            }
+        } else {
+            // Fallback for single suggestion or if regex doesn't match expected format
+            const processedResponse = chatResponse.replace(/\[(.*?)\]/g, '<a href="#">$1</a>');
+            suggestions = [processedResponse];
+        }
+
+        res.json({ response: suggestions, explanation: explanation });
+
+    } catch (error) {
+        console.error('Error communicating with Gemini:', error);
+        res.status(500).json({ error: error.message || 'Something went wrong with Gemini.' });
+    }
+});
