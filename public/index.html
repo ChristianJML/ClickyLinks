@@ -113,6 +113,9 @@
         .response-box p {
             font-size: 1em; /* Ensure consistent font size */
         }
+        .model-name {
+            font-size: 16px;
+        }
         .response-box ul {
             list-style-type: none;
             padding: 0;
@@ -138,15 +141,15 @@
         <button id="submitButton">Submit</button>
         <button id="addDetailsButton">Add Extra Detail</button>
         <div class="response-box" id="chatGPTResponseBox">
-            <h2>ChatGPT Response</h2>
+            <h2>ChatGPT Response <span class="model-name">(gpt-3.5-turbo)</span></h2>
             <p id="chatGPTresponseText"></p>
         </div>
         <div class="response-box" id="claudeResponseBox" style="margin-top: 20px;">
-            <h2>Claude Response</h2>
+            <h2>Claude Response <span class="model-name">(claude-sonnet-4)</span></h2>
             <p id="claudeResponseText"></p>
         </div>
         <div class="response-box" id="geminiResponseBox" style="margin-top: 20px;">
-            <h2>Gemini Response</h2>
+            <h2>Gemini Response <span class="model-name">(gemini-1.5-flash)</span></h2>
             <p id="geminiResponseText"></p>
         </div>
     </div>

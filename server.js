@@ -246,7 +246,7 @@ app.post('/gemini-chat', async (req, res) => {
             systemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
         }
         
-        const model = genAI.getGenerativeModel({ model: "gemini-pro"}); // Using gemini-pro for text generation
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash"}); // Using gemini-1.5-flash for text generation
         const result = await model.generateContent(systemContent + "\nUser: " + userMessage);
         const chatResponse = result.response.text();
         const cleanedChatResponse = chatResponse.replace(/—/g, ''); // Remove em dash
