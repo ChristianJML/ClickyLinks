@@ -109,6 +109,10 @@
             width: 100%;
             margin-top: 5px;
         }
+        .response-box ul,
+        .response-box p {
+            font-size: 1em; /* Ensure consistent font size */
+        }
         .response-box ul {
             list-style-type: none;
             padding: 0;
@@ -282,6 +286,12 @@
                     } else {
                         chatGPTResponseText.innerHTML = chatGPTData.response;
                     }
+                    if (chatGPTData.explanation) {
+                        const explanationP = document.createElement('p');
+                        explanationP.textContent = chatGPTData.explanation;
+                        explanationP.style.marginTop = '10px';
+                        chatGPTResponseText.appendChild(explanationP);
+                    }
                 } else {
                     chatGPTResponseText.textContent = 'Error: ' + (chatGPTData.error || 'Something went wrong with ChatGPT.');
                 }
@@ -313,6 +323,12 @@
                         claudeResponseText.appendChild(ul);
                     } else {
                         claudeResponseText.innerHTML = claudeData.response;
+                    }
+                    if (claudeData.explanation) {
+                        const explanationP = document.createElement('p');
+                        explanationP.textContent = claudeData.explanation;
+                        explanationP.style.marginTop = '10px';
+                        claudeResponseText.appendChild(explanationP);
                     }
                 } else {
                     claudeResponseText.textContent = 'Error: ' + (claudeData.error || 'Something went wrong with Claude.');

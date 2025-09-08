@@ -40,7 +40,7 @@ app.post('/chat', async (req, res) => {
 
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
-        systemContent += ` Never use the '—' character in your responses.`;
+        systemContent += ` Never use the '—' character in your responses. After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
 
         if (numSuggestions) {
             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
@@ -50,18 +50,10 @@ app.post('/chat', async (req, res) => {
         } else if (playfulProfessional === 0) {
             systemContent += ` Maintain a balanced, neutral tone between playful and professional.`;
         }
-        if (casualFormal) {
-            systemContent += ` Adjust the tone: ${casualFormal < 0 ? 'more casual' : 'more formal'}.`;
-        } else if (casualFormal === 0) {
-            systemContent += ` Maintain a balanced, neutral tone between casual and formal.`;
-        }
-        if (friendlyAuthoritative) {
-            systemContent += ` Adjust the tone: ${friendlyAuthoritative < 0 ? 'more friendly' : 'more authoritative'}.`;
-        } else if (friendlyAuthoritative === 0) {
-            systemContent += ` Maintain a balanced, neutral tone between friendly and authoritative.`;
-        }
+        
+        
         if (length) {
-            systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'long and descriptive'}.`;
+            systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'ENSURE the response is long and descriptive'}.`;
         }
         if (companyType) {
             systemContent += ` The company operates in the ${companyType} industry.`;
@@ -89,8 +81,12 @@ app.post('/chat', async (req, res) => {
         const chatResponse = completion.choices[0].message.content;
         const cleanedChatResponse = chatResponse.replace(/—/g, ''); // Remove em dash
         
+        const explanationMatch = cleanedChatResponse.match(/Explanation:([\s\S]*)/);
+        const explanation = explanationMatch ? explanationMatch[1].trim() : '';
+        const suggestionsOnlyResponse = explanationMatch ? cleanedChatResponse.substring(0, explanationMatch.index).trim() : cleanedChatResponse;
+
         // Post-process the ChatGPT response to extract and convert bracketed text into an HTML link for each suggestion
-        const suggestionMatches = cleanedChatResponse.match(/\d+\.\s*(.*?)(?=\d+\.\s*|$)/gs);
+        const suggestionMatches = suggestionsOnlyResponse.match(/\d+\.\s*(.*?)(?=\d+\.\s*|$)/gs);
         let suggestions = [];
 
         if (suggestionMatches) {
@@ -108,7 +104,7 @@ app.post('/chat', async (req, res) => {
             suggestions = [processedResponse];
         }
 
-        res.json({ response: suggestions });
+        res.json({ response: suggestions, explanation: explanation });
     } catch (error) {
         console.error('Error communicating with OpenAI:', error);
         res.status(500).json({ error: error.message || 'Something went wrong.' });
@@ -126,7 +122,7 @@ app.post('/claude-chat', async (req, res) => {
 
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
-        systemContent += ` Never use the '—' character in your responses.`;
+        systemContent += ` Never use the '—' character in your responses. After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
 
         if (numSuggestions) {
             systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
@@ -136,16 +132,8 @@ app.post('/claude-chat', async (req, res) => {
         } else if (playfulProfessional === 0) {
             systemContent += ` Maintain a plain, unbiased tone, avoiding both playful and professional leanings.`;
         }
-        if (casualFormal) {
-            systemContent += ` Adjust the tone: ${casualFormal < 0 ? 'more casual' : 'more formal'}.`;
-        } else if (casualFormal === 0) {
-            systemContent += ` Maintain a plain, unbiased tone, avoiding both casual and formal leanings.`;
-        }
-        if (friendlyAuthoritative) {
-            systemContent += ` Adjust the tone: ${friendlyAuthoritative < 0 ? 'more friendly' : 'more authoritative'}.`;
-        } else if (friendlyAuthoritative === 0) {
-            systemContent += ` Maintain a plain, unbiased tone, avoiding both friendly and authoritative leanings.`;
-        }
+        
+        
         if (length) {
             systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'long and descriptive'}.`;
         }
@@ -184,8 +172,12 @@ app.post('/claude-chat', async (req, res) => {
         const chatResponse = claudeResponse.content[0].text;
         const cleanedChatResponse = chatResponse.replace(/—/g, ''); // Remove em dash
         
+        const explanationMatch = cleanedChatResponse.match(/Explanation:([\s\S]*)/);
+        const explanation = explanationMatch ? explanationMatch[1].trim() : '';
+        const suggestionsOnlyResponse = explanationMatch ? cleanedChatResponse.substring(0, explanationMatch.index).trim() : cleanedChatResponse;
+
         // Post-process the Claude response to extract and convert bracketed text into an HTML link for each suggestion
-        const suggestionMatches = cleanedChatResponse.match(/\d+\.\s*(.*?)(?=\d+\.\s*|$)/gs);
+        const suggestionMatches = suggestionsOnlyResponse.match(/\d+\.\s*(.*?)(?=\d+\.\s*|$)/gs);
         let suggestions = [];
 
         if (suggestionMatches) {
@@ -203,7 +195,7 @@ app.post('/claude-chat', async (req, res) => {
             suggestions = [processedResponse];
         }
 
-        res.json({ response: suggestions });
+        res.json({ response: suggestions, explanation: explanation });
 
     } catch (error) {
         console.error('Error communicating with Claude:', error);
