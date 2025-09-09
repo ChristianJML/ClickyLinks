@@ -6,15 +6,19 @@
     <title>ClickyWords</title>
     <meta name="description" content="Burn boring CTAs. Write actions people want to take. An AI-powered tool that helps you craft clear, compelling calls-to-action that convert.">
     <style>
+        html, body {
+            height: 100%; /* Ensure html and body take full viewport height */
+            margin: 0; /* Reset default margins */
+            padding: 0; /* Reset default padding */
+        }
         body {
-            margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #1a2a4a; /* Dark blue */
+            background-color: #E1E4E1; /* Updated background color */
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            color: white;
+            color: #261201; /* Updated text color */
         }
         .container {
             text-align: center;
@@ -26,13 +30,19 @@
             gap: 16px; /* Add 16px gap between children, specifically for response boxes */
         }
         input[type="text"] {
+            flex-grow: 1;
             padding: 10px;
-            /* Adjusted width for inline display */
-            flex-grow: 1; /* Allows text input to take available space */
+            border: 2px solid #261201; /* Added border */
             border-radius: 5px;
-            border: 1px solid #5f7fbf;
-            background-color: #2a3a5a;
-            color: white;
+            font-size: 1em;
+            background-color: transparent; /* Transparent background */
+            color: #261201;
+            margin-right: 0;
+        }
+        input[type="text"]:focus {
+            outline: none; /* Remove default outline */
+            border-color: #36679b; /* Set border color on focus */
+            border-width: 1px; /* Set border thickness on focus */
         }
         .input-buttons-container {
             display: flex;
@@ -44,19 +54,28 @@
         }
         button {
             padding: 10px 15px;
-            border: none;
+            border: 2px solid #ED8008; /* Added 2px border */
             border-radius: 5px;
-            background-color: #007bff; /* Blue */
-            color: white;
+            background-color: #ED8008; /* Updated button background color */
+            color: #261201; /* Updated button text color */
             cursor: pointer;
             font-size: 1em;
         }
         button:hover {
-            background-color: #0056b3;
+            background-color: #d67307; /* Slightly darker on hover */
+        }
+        #addDetailsButton {
+            background-color: transparent;
+            color: #261201;
+            border: 2px solid #ED8008; /* Updated border to 2px */
+        }
+        #addDetailsButton:hover {
+            background-color: rgba(237, 128, 8, 0.1); /* Slight background on hover */
         }
         .response-box {
-            background-color: #3f5f9a; /* Lighter blue */
-            padding: 15px;
+            background-color: #E1E4E1; /* Updated background color */
+            border: 2px solid #261201; /* Added border */
+            padding: 20px;
             border-radius: 8px;
             text-align: left; /* Left align text within response boxes */
             opacity: 0;
@@ -91,34 +110,48 @@
             top: 0;
             width: 100%; /* Full width */
             height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
         }
+        #ctaEssayModal.modal {
+            /* Revert specific padding and alignment, rely on default .modal centering for the overlay */
+        }
         .modal-content {
-            background-color: #1a2a4a; /* Dark blue */
-            margin: auto; /* Centered */
+            background-color: #E1E4E1; /* Updated background color */
+            border: 2px solid #261201; /* Added border */
             padding: 20px;
-            border: 1px solid #888;
-            width: 30%; /* Could be adjusted */
             border-radius: 8px;
-            position: absolute;
-            right: 0;
-            top: 0;
-            height: 100%;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            max-height: calc(100vh - 48px); /* Set general max-height for all modal content */
             overflow-y: auto;
-            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            margin: auto; /* Default to auto margin for centering */
+            box-sizing: border-box; /* Include padding and border in the element's total width and height */
         }
         #ctaEssayModal .modal-content {
-            width: 70%;
             max-width: 800px;
-            position: relative; /* Override absolute positioning from general .modal-content */
-            right: auto; /* Reset right position */
-            top: auto; /* Reset top position */
-            height: auto; /* Allow content to define height */
-            max-height: 90vh; /* Set max height for scrollability */
+            max-height: calc(100vh - 48px); /* Calculate height based on viewport and desired top/bottom margin */
+            background-color: #E1E4E1; /* Updated background color */
+            border: 2px solid #261201; /* Added border */
+            margin: 24px auto; /* Set top/bottom margin to 24px and auto for horizontal centering */
+            box-sizing: border-box; /* Ensure consistent box model */
+        }
+        #detailModal .modal-content { /* Specific styles for Add Extra Detail modal content */
+            margin: 24px 24px 24px auto; /* Top, Right, Bottom, Left. Auto pushes it to the right */
+            max-height: calc(100vh - 48px); /* Calculate height based on viewport and desired top/bottom margin */
+            box-sizing: border-box; /* Ensure consistent box model */
+        }
+        /* New styles for the Add Extra Detail modal itself */
+        #detailModal.modal {
+            padding-top: 24px; /* Add top padding to the modal container */
+            padding-bottom: 24px; /* Add bottom padding to the modal container */
+            align-items: flex-start; /* Align content to the start (top) to respect margins */
+            justify-content: flex-end; /* Push content to the right */
+            margin: 0; /* Ensure no margin on the modal container itself */
+            box-sizing: border-box; /* Ensure consistent box model */
         }
         .close-button {
-            color: #aaa;
+            color: #261201; /* Updated close button color */
             float: right;
             font-size: 28px;
             font-weight: bold;
@@ -145,6 +178,7 @@
         input[type="range"] {
             width: 100%;
             margin-top: 5px;
+            accent-color: #3b4b59; /* Updated slider color */
         }
         /* Styles for the custom switch */
         .switch-container {
@@ -190,10 +224,10 @@
             border-radius: 50%;
         }
         input:checked + .slider {
-            background-color: #007bff;
+            background-color: #3b4b59;
         }
         input:focus + .slider {
-            box-shadow: 0 0 1px #007bff;
+            box-shadow: 0 0 1px #3b4b59;
         }
         input:checked + .slider:before {
             -webkit-transform: translateX(20px);
@@ -221,11 +255,28 @@
         }
         .response-box li a {
             display: inline;
-            color: #007bff; /* Link color */
+            color: #36679b; /* Updated link color */
             text-decoration: underline;
         }
         .response-box li a:hover {
-            color: #0056b3;
+            color: #0056b3; /* Keep a hover color, could also update to a shade of #36679b if desired */
+        }
+        a {
+            color: #36679b; /* Updated all link color */
+            text-decoration: underline;
+        }
+        /* Added for the 'Add extra detail' modal close button */
+        .detail-close-button {
+            color: #261201; /* Updated close button color */
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .detail-close-button:hover,
+        .detail-close-button:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -236,9 +287,9 @@
             <p class="slogan">Write actions people want to take. <a href="#" id="learnWhyLink">Learn why</a></p>
         </header>
         <div class="input-buttons-container">
-            <input type="text" id="textInput" placeholder="Enter text here">
+            <input type="text" id="mainInput" value="" autofocus>
             <button id="submitButton">Fix my link</button>
-            <button id="addDetailsButton">Add extra detail</button>
+            <button id="addDetailsButton" class="modal-button">Add extra detail</button>
         </div>
         <div class="response-box" id="chatGPTResponseBox">
             <h2>ChatGPT <span class="model-name">(gpt-4)</span></h2>
@@ -263,7 +314,7 @@
                 <input type="range" id="numSuggestions" min="1" max="3" value="1">
             </div>
             <div class="control-group">
-                <h4>Tone Controls</h4>
+                
                 <label for="playfulProfessional"><span>Playful</span><span>Professional</span></label>
                 <input type="range" id="playfulProfessional" min="-5" max="5" value="-1">
             </div>
@@ -281,17 +332,18 @@
                 </div>
             </div>
             <div class="control-group">
-                <h4>Context Controls</h4>
-                
                 <label for="whatCompanyDoes">What the company does:</label>
                 <input type="text" id="whatCompanyDoes" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+            </div>
+            <div class="control-group">
                 <label for="targetAudience">Target audience</label>
                 <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
             </div>
             <div class="control-group">
-                <h4>Advanced Controls</h4>
                 <label for="banWords">Ban words (comma-separated):</label>
                 <input type="text" id="banWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+            </div>
+            <div class="control-group">
                 <label for="keepWords">Keep words (comma-separated):</label>
                 <input type="text" id="keepWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
             </div>
@@ -317,7 +369,7 @@
                 </section>
 
                 <section>
-                    <h2>Conversion (CRO)</h2>
+                    <h3>Conversion (CRO)</h3>
                     <p>
                     Effective CTAs communicate the action <strong>and</strong> the value: “Add to cart,” “Start free trial,”
                     “Download the report.” Generic commands like “click here” don’t tell users what happens next or why it matters,
@@ -327,7 +379,7 @@
                 </section>
 
                 <section>
-                    <h2>Accessibility</h2>
+                    <h3>Accessibility</h3>
                     <p>
                     Screen-reader and keyboard users often navigate by reading a list of links out of context. Repeated “click here”
                     provides no clue about destination or purpose. Accessibility standards require (and guidance strongly recommends)
@@ -342,7 +394,7 @@
                 </section>
 
                 <section>
-                    <h2>SEO</h2>
+                    <h3>SEO</h3>
                     <p>
                     Search engines use anchor text to understand a page’s topic. Google lists “Click here” and “Read more”
                     as <em>bad (too generic)</em> examples and recommends concise, descriptive anchors:
@@ -353,7 +405,7 @@
                 </section>
 
                 <section>
-                    <h2>User Experience (UX)</h2>
+                    <h3>User Experience (UX)</h3>
                     <p>
                     Labels need “information scent”—a clear cue about the outcome. “Click here” forces readers to hunt for context,
                     slowing scanning and eroding trust. See
@@ -364,7 +416,7 @@
                 </section>
 
                 <section>
-                    <h2>What to Use Instead</h2>
+                    <h3>What to Use Instead</h3>
                     <ul>
                     <li><strong>E-commerce:</strong> “Add to cart,” “Buy now,” “Shop new arrivals.”</li>
                     <li><strong>SaaS:</strong> “Start free trial,” “Get started,” “Request a demo.”</li>
@@ -393,7 +445,7 @@
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const textInput = document.getElementById('textInput');
+            const textInput = document.getElementById('mainInput'); // Changed from textInput
             const submitButton = document.getElementById('submitButton');
             const addDetailsButton = document.getElementById('addDetailsButton');
             const chatGPTResponseText = document.getElementById('chatGPTresponseText');
@@ -442,14 +494,14 @@
                 detailModal.style.display = 'none'; // Close modal after applying
             });
 
-            document.getElementById('textInput').addEventListener('keydown', (event) => {
+            document.getElementById('mainInput').addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
                     document.getElementById('submitButton').click();
                 }
             });
 
             document.getElementById('submitButton').addEventListener('click', async () => {
-                const textInput = document.getElementById('textInput').value;
+                const textInput = document.getElementById('mainInput').value; // Changed from textInput
                 const chatGPTResponseText = document.getElementById('chatGPTresponseText');
                 const claudeResponseText = document.getElementById('claudeResponseText');
                 const geminiResponseText = document.getElementById('geminiResponseText'); // Added Gemini reference
@@ -593,9 +645,12 @@
             });
             const learnWhyLink = document.getElementById('learnWhyLink');
             if (learnWhyLink) {
+                console.log('learnWhyLink element found:', learnWhyLink); // Debugging line
                 learnWhyLink.addEventListener('click', (event) => {
                     event.preventDefault(); // Prevent default link behavior
+                    console.log('learnWhyLink clicked, attempting to open modal.'); // Debugging line
                     document.getElementById('ctaEssayModal').style.display = 'flex'; // Use flex to center the modal
+                    console.log('ctaEssayModal display style after click:', document.getElementById('ctaEssayModal').style.display); // Debugging line
                 });
             }
 
