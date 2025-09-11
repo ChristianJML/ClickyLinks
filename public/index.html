@@ -29,6 +29,50 @@
             flex-direction: column; /* Stack children vertically */
             gap: 16px; /* Add 16px gap between children, specifically for response boxes */
         }
+        /* Responsive Wrapper for larger screens */
+        .responsive-wrapper {
+            display: flex;
+            width: 100%;
+            min-height: 100vh; /* Ensure wrapper takes full viewport height */
+        }
+        .main-content-area {
+            background-image: radial-gradient(circle at center, #261201 2px, transparent 3px); /* Black circles */
+            background-size: 20px 20px; /* Adjust size of the repeating pattern */
+            display: none; /* Hidden by default */
+        }
+        @media (min-width: 768px) {
+            .responsive-wrapper {
+                flex-direction: row; /* Arrange items horizontally */
+                justify-content: flex-start; /* Align to start */
+                align-items: stretch; /* Stretch items to fill height */
+            }
+            .container {
+                width: 33%; /* 33% width on large screens */
+                max-width: none; /* Remove max-width constraint */
+                padding: 20px; /* Keep padding */
+                gap: 16px; /* Ensure gap for items within container */
+                display: flex; /* Ensure container is a flex container */
+                flex-direction: column; /* Stack children vertically */
+            }
+            .main-content-area {
+                display: flex; /* Enable flexbox for centering */
+                flex-direction: column; /* Stack response boxes vertically */
+                justify-content: center; /* Center content vertically */
+                align-items: center; /* Center content horizontally */
+                width: 67%; /* 67% width on large screens */
+                gap: 24px; /* Add gap between response boxes */
+            }
+            .response-box {
+                max-width: 600px; /* Set max-width for response boxes */
+                width: 80%; /* Set width for response boxes */
+            }
+            #addDetailsButton {
+                display: block; /* Show the add details button on larger screens */
+            }
+            #detailModal {
+                display: none; /* Hide the modal on larger screens */
+            }
+        }
         input[type="text"] {
             flex-grow: 1;
             padding: 10px;
@@ -110,10 +154,18 @@
             top: 0;
             width: 100%; /* Full width */
             height: 100%; /* Full height */
+            overflow: auto; /* Re-added overflow: auto; to allow scrolling of the entire modal */
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            padding: 24px 0; /* Add top and bottom padding to the modal overlay itself */
+        }
+        #extraDetailsSection {
+            display: none; /* Hidden by default for mobile */
+            flex-direction: column; /* Stack children vertically */
+            gap: 16px; /* Consistent vertical spacing */
+            padding: 20px; /* Add some padding for visual separation if needed */
         }
         #ctaEssayModal.modal {
-            /* Revert specific padding and alignment, rely on default .modal centering for the overlay */
+            /* Specific styles for the CTA essay modal container - rely on default .modal centering */
         }
         .modal-content {
             background-color: #E1E4E1; /* Updated background color */
@@ -123,22 +175,22 @@
             position: relative;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             max-width: 500px;
-            max-height: calc(100vh - 48px); /* Set general max-height for all modal content */
+            max-height: 100%; /* Fill 100% of the available height within the padded parent */
             overflow-y: auto;
-            margin: auto; /* Default to auto margin for centering */
+            margin: auto; /* Auto margin for horizontal centering within the padded modal */
             box-sizing: border-box; /* Include padding and border in the element's total width and height */
         }
         #ctaEssayModal .modal-content {
             max-width: 800px;
-            max-height: calc(100vh - 48px); /* Calculate height based on viewport and desired top/bottom margin */
+            max-height: 100%; /* Fill 100% of the available height within the padded parent */
             background-color: #E1E4E1; /* Updated background color */
             border: 2px solid #261201; /* Added border */
-            margin: 24px auto; /* Set top/bottom margin to 24px and auto for horizontal centering */
+            margin: auto; /* Centered within the padded modal */
             box-sizing: border-box; /* Ensure consistent box model */
         }
         #detailModal .modal-content { /* Specific styles for Add Extra Detail modal content */
-            margin: 24px 24px 24px auto; /* Top, Right, Bottom, Left. Auto pushes it to the right */
-            max-height: calc(100vh - 48px); /* Calculate height based on viewport and desired top/bottom margin */
+            margin: 0 24px 0 auto; /* Top:0, Right:24px, Bottom:0, Left:auto (pushes to right) */
+            max-height: 100%; /* Fill 100% of the available height within the padded parent */
             box-sizing: border-box; /* Ensure consistent box model */
         }
         /* New styles for the Add Extra Detail modal itself */
@@ -281,27 +333,31 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header style="display: flex; flex-direction: column; gap: 16px;">
-            <h1>ClickyWords</h1>
-            <p class="slogan">Write actions people want to take. <a href="#" id="learnWhyLink">Learn why</a></p>
-        </header>
-        <div class="input-buttons-container">
-            <input type="text" id="mainInput" value="" autofocus>
-            <button id="submitButton">Fix my link</button>
-            <button id="addDetailsButton" class="modal-button">Add extra detail</button>
+    <div class="responsive-wrapper">
+        <div class="container">
+            <header style="display: flex; flex-direction: column; gap: 16px;">
+                <h1>ClickyWords</h1>
+                <p class="slogan">Write actions people want to take. <a href="#" id="learnWhyLink">Learn why</a></p>
+            </header>
+            <div class="input-buttons-container">
+                <input type="text" id="mainInput" value="" autofocus>
+                <button id="submitButton">Fix my link</button>
+                <button id="addDetailsButton" class="modal-button">Add extra detail</button>
+            </div>
         </div>
-        <div class="response-box" id="chatGPTResponseBox">
-            <h2>ChatGPT <span class="model-name">(gpt-4)</span></h2>
-            <p id="chatGPTresponseText"></p>
-        </div>
-        <div class="response-box" id="claudeResponseBox">
-            <h2>Claude <span class="model-name">(sonnet-4)</span></h2>
-            <p id="claudeResponseText"></p>
-        </div>
-        <div class="response-box" id="geminiResponseBox">
-            <h2>Gemini <span class="model-name">(gemini-1.5-flash)</span></h2>
-            <p id="geminiResponseText"></p>
+        <div class="main-content-area">
+            <div class="response-box" id="chatGPTResponseBox">
+                <h2>ChatGPT <span class="model-name">(gpt-4)</span></h2>
+                <p id="chatGPTresponseText"></p>
+            </div>
+            <div class="response-box" id="claudeResponseBox">
+                <h2>Claude <span class="model-name">(sonnet-4)</span></h2>
+                <p id="claudeResponseText"></p>
+            </div>
+            <div class="response-box" id="geminiResponseBox">
+                <h2>Gemini <span class="model-name">(gemini-1.5-flash)</span></h2>
+                <p id="geminiResponseText"></p>
+            </div>
         </div>
     </div>
 
@@ -645,12 +701,9 @@
             });
             const learnWhyLink = document.getElementById('learnWhyLink');
             if (learnWhyLink) {
-                console.log('learnWhyLink element found:', learnWhyLink); // Debugging line
                 learnWhyLink.addEventListener('click', (event) => {
                     event.preventDefault(); // Prevent default link behavior
-                    console.log('learnWhyLink clicked, attempting to open modal.'); // Debugging line
                     document.getElementById('ctaEssayModal').style.display = 'flex'; // Use flex to center the modal
-                    console.log('ctaEssayModal display style after click:', document.getElementById('ctaEssayModal').style.display); // Debugging line
                 });
             }
 
