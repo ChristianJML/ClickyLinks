@@ -131,14 +131,17 @@
             overflow: hidden; /* Hide overflowing content */
             transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out, max-height 0.5s ease-in-out; /* Add max-height to transition */
         }
-        .inner-box {
+        .top-area {
             display: flex;
-            flex-direction: column;
+            align-items: center; /* Vertically align items to the middle */
+            margin-bottom: 0; /* Removed bottom margin */
         }
         .loader {
-            font-size: 1em; /* 16px */
+            font-size: 16px; /* Match model-name font size */
+            font-weight: 400; /* Match model-name font weight */
             opacity: 1; /* Visible initially */
             transition: opacity 0.5s ease-in-out; /* Fade out effect */
+            margin-left: 10px; /* Add space between model name and loader */
         }
         .result {
             opacity: 0; /* Hidden initially */
@@ -149,30 +152,21 @@
             margin-top: 0; /* Remove top margin from H2 inside response-box */
             margin-bottom: 0; /* Ensure no bottom margin on H2 */
         }
-        .response-box h2 {
-            margin-bottom: 0; /* Ensure no bottom margin on H2 */
-        }
-        div[id$="PrimaryContent"] {
-            margin-top: 10px; /* Add top margin to the primary content div */
-        }
         .response-box p {
             margin-bottom: 0; /* Remove bottom margin from P inside response-box */
         }
         .new-cta {
             font-size: 1em; /* 16px */
-            opacity: 0; /* Initial opacity for fade-in */
-            transition: opacity 0.5s ease-in-out; /* Transition for fade-in */
+            /* Removed opacity and transition, now handled by parent .result */
         }
         .new-cta-list li {
             font-size: 1em; /* 16px */
-            opacity: 0; /* Initial opacity for fade-in */
-            transition: opacity 0.5s ease-in-out; /* Transition for fade-in */
+            /* Removed opacity and transition, now handled by parent .result */
         }
         .why-it-works {
             font-size: 0.875em; /* 14px */
-            margin-top: 10px; /* Add some space above the explanation */
-            opacity: 0; /* Initial opacity for fade-in */
-            transition: opacity 0.5s ease-in-out; /* Transition for fade-in */
+            margin-top: 0; /* Changed to 0 initially */
+            /* Removed opacity and transition, now handled by parent .result */
         }
         h1 {
             font-size: 3em;
@@ -342,6 +336,7 @@
         .model-name {
             font-size: 16px;
             font-weight: 400; /* Set font-weight to 400 */
+            margin-left: 10px; /* Add space between H2 and model-name */
         }
         .response-box ul {
             list-style-type: none;
@@ -349,8 +344,7 @@
             font-size: 1em; /* Set font size of ul to 1em */
         }
         .new-cta-list {
-            opacity: 0; /* Initial opacity for fade-in */
-            transition: opacity 0.5s ease-in-out; /* Transition for fade-in */
+            /* Removed opacity and transition, now handled by parent .result */
         }
         .response-box li {
             margin-bottom: 10px;
@@ -386,7 +380,7 @@
     <div class="responsive-wrapper">
         <div class="container">
             <header style="display: flex; flex-direction: column; gap: 16px;">
-                <h1>ClickyWords</h1>
+                <h1>ClickyLinks</h1>
                 <p class="slogan">Write actions people want to take. <a href="#" id="learnWhyLink">Learn why</a></p>
             </header>
             <div class="input-buttons-container">
@@ -397,33 +391,30 @@
         </div>
         <div class="main-content-area">
             <div class="response-box" id="chatGPTResponseBox">
-                <h2>ChatGPT <span class="model-name">(gpt-4)</span></h2>
-                <div class="inner-box">
-                    <p class="loader">Thinking...</p>
-                    <div class="result">
-                        <div id="chatGPTPrimaryContent"></div>
-                        <p class="why-it-works" id="chatGPTExplanationText"></p>
-                    </div>
+                <div class="top-area">
+                    <h2>ChatGPT</h2><span class="model-name">(gpt-4)</span><span class="loader">Thinking...</span>
+                </div>
+                <div class="result">
+                    <div id="chatGPTPrimaryContent"></div>
+                    <p class="why-it-works" id="chatGPTExplanationText"></p>
                 </div>
             </div>
             <div class="response-box" id="claudeResponseBox">
-                <h2>Claude <span class="model-name">(sonnet-4)</span></h2>
-                <div class="inner-box">
-                    <p class="loader">Thinking...</p>
-                    <div class="result">
-                        <div id="claudePrimaryContent"></div>
-                        <p class="why-it-works" id="claudeExplanationText"></p>
-                    </div>
+                <div class="top-area">
+                    <h2>Claude</h2><span class="model-name">(sonnet-4)</span><span class="loader">Thinking...</span>
+                </div>
+                <div class="result">
+                    <div id="claudePrimaryContent"></div>
+                    <p class="why-it-works" id="claudeExplanationText"></p>
                 </div>
             </div>
             <div class="response-box" id="geminiResponseBox">
-                <h2>Gemini <span class="model-name">(1.5-flash)</span></h2>
-                <div class="inner-box">
-                    <p class="loader">Thinking...</p>
-                    <div class="result">
-                        <div id="geminiPrimaryContent"></div>
-                        <p class="why-it-works" id="geminiExplanationText"></p>
-                    </div>
+                <div class="top-area">
+                    <h2>Gemini</h2><span class="model-name">(1.5-flash)</span><span class="loader">Thinking...</span>
+                </div>
+                <div class="result">
+                    <div id="geminiPrimaryContent"></div>
+                    <p class="why-it-works" id="geminiExplanationText"></p>
                 </div>
             </div>
         </div>
@@ -663,13 +654,13 @@
                 geminiExplanationText.textContent = ''; // Clear previous explanation
 
                 // Show loader and hide result initially
-                document.getElementById('chatGPTResponseBox').querySelector('.loader').style.opacity = '1';
+                document.getElementById('chatGPTResponseBox').querySelector('.top-area .loader').style.opacity = '1';
                 document.getElementById('chatGPTResponseBox').querySelector('.result').style.opacity = '0';
                 document.getElementById('chatGPTResponseBox').querySelector('.result').style.visibility = 'hidden';
-                document.getElementById('claudeResponseBox').querySelector('.loader').style.opacity = '1';
+                document.getElementById('claudeResponseBox').querySelector('.top-area .loader').style.opacity = '1';
                 document.getElementById('claudeResponseBox').querySelector('.result').style.opacity = '0';
                 document.getElementById('claudeResponseBox').querySelector('.result').style.visibility = 'hidden';
-                document.getElementById('geminiResponseBox').querySelector('.loader').style.opacity = '1';
+                document.getElementById('geminiResponseBox').querySelector('.top-area .loader').style.opacity = '1';
                 document.getElementById('geminiResponseBox').querySelector('.result').style.opacity = '0';
                 document.getElementById('geminiResponseBox').querySelector('.result').style.visibility = 'hidden';
 
@@ -701,15 +692,13 @@
                     if (chatGPTResponse.ok) {
                         chatGPTPrimaryContent.innerHTML = ''; // Clear previous responses
                         // Hide loader and show result
-                        const chatGPTLoader = document.getElementById('chatGPTResponseBox').querySelector('.loader');
+                        const chatGPTLoader = document.getElementById('chatGPTResponseBox').querySelector('.top-area .loader');
                         chatGPTLoader.style.opacity = '0';
                         chatGPTLoader.addEventListener('transitionend', function handler() {
                             chatGPTLoader.style.display = 'none';
                             chatGPTLoader.removeEventListener('transitionend', handler);
                         });
-                        document.getElementById('chatGPTResponseBox').querySelector('.result').style.opacity = '1';
-                        document.getElementById('chatGPTResponseBox').querySelector('.result').style.visibility = 'visible';
-
+                        
                         if (chatGPTData.response && Array.isArray(chatGPTData.response)) {
                             const ul = document.createElement('ul');
                             ul.classList.add('new-cta-list'); // Add class to ul
@@ -727,22 +716,15 @@
                         }
                         if (chatGPTData.explanation) {
                             chatGPTExplanationText.textContent = chatGPTData.explanation;
+                            chatGPTExplanationText.style.marginTop = '16px'; // Add margin top when explanation is present
                         }
                         // Set max-height to allow expansion
                         document.getElementById('chatGPTResponseBox').style.maxHeight = '1000px'; // Adjust as needed
 
                         // Trigger fade-in for text
                         setTimeout(() => {
-                            const newCtaElement = chatGPTPrimaryContent.querySelector('.new-cta') || chatGPTPrimaryContent.querySelector('.new-cta-list');
-                            if (newCtaElement) {
-                                newCtaElement.style.opacity = '1';
-                                if (newCtaElement.classList.contains('new-cta-list')) {
-                                    Array.from(newCtaElement.children).forEach(li => {
-                                        li.style.opacity = '1';
-                                    });
-                                }
-                            }
-                            chatGPTExplanationText.style.opacity = '1';
+                            document.getElementById('chatGPTResponseBox').querySelector('.result').style.opacity = '1';
+                            document.getElementById('chatGPTResponseBox').querySelector('.result').style.visibility = 'visible';
                         }, 500); // Increased delay to allow box expansion to complete
                     } else {
                         chatGPTPrimaryContent.innerHTML = 'Error: ' + (chatGPTData.error || 'Something went wrong with ChatGPT.');
@@ -766,15 +748,13 @@
                     if (claudeResponse.ok) {
                         claudePrimaryContent.innerHTML = ''; // Clear previous responses
                         // Hide loader and show result
-                        const claudeLoader = document.getElementById('claudeResponseBox').querySelector('.loader');
+                        const claudeLoader = document.getElementById('claudeResponseBox').querySelector('.top-area .loader');
                         claudeLoader.style.opacity = '0';
                         claudeLoader.addEventListener('transitionend', function handler() {
                             claudeLoader.style.display = 'none';
                             claudeLoader.removeEventListener('transitionend', handler);
                         });
-                        document.getElementById('claudeResponseBox').querySelector('.result').style.opacity = '1';
-                        document.getElementById('claudeResponseBox').querySelector('.result').style.visibility = 'visible';
-
+                        
                         if (claudeData.response && Array.isArray(claudeData.response)) {
                             const ul = document.createElement('ul');
                             ul.classList.add('new-cta-list'); // Add class to ul
@@ -792,22 +772,15 @@
                         }
                         if (claudeData.explanation) {
                             claudeExplanationText.textContent = claudeData.explanation;
+                            claudeExplanationText.style.marginTop = '16px'; // Add margin top when explanation is present
                         }
                         // Set max-height to allow expansion
                         document.getElementById('claudeResponseBox').style.maxHeight = '1000px'; // Adjust as needed
 
                         // Trigger fade-in for text
                         setTimeout(() => {
-                            const newCtaElement = claudePrimaryContent.querySelector('.new-cta') || claudePrimaryContent.querySelector('.new-cta-list');
-                            if (newCtaElement) {
-                                newCtaElement.style.opacity = '1';
-                                if (newCtaElement.classList.contains('new-cta-list')) {
-                                    Array.from(newCtaElement.children).forEach(li => {
-                                        li.style.opacity = '1';
-                                    });
-                                }
-                            }
-                            claudeExplanationText.style.opacity = '1';
+                            document.getElementById('claudeResponseBox').querySelector('.result').style.opacity = '1';
+                            document.getElementById('claudeResponseBox').querySelector('.result').style.visibility = 'visible';
                         }, 500); // Increased delay to allow box expansion to complete
                     } else {
                         claudePrimaryContent.innerHTML = 'Error: ' + (claudeData.error || 'Something went wrong with Claude.');
@@ -831,15 +804,13 @@
                     if (geminiResponse.ok) {
                         geminiPrimaryContent.innerHTML = ''; // Clear previous responses
                         // Hide loader and show result
-                        const geminiLoader = document.getElementById('geminiResponseBox').querySelector('.loader');
+                        const geminiLoader = document.getElementById('geminiResponseBox').querySelector('.top-area .loader');
                         geminiLoader.style.opacity = '0';
                         geminiLoader.addEventListener('transitionend', function handler() {
                             geminiLoader.style.display = 'none';
                             geminiLoader.removeEventListener('transitionend', handler);
                         });
-                        document.getElementById('geminiResponseBox').querySelector('.result').style.opacity = '1';
-                        document.getElementById('geminiResponseBox').querySelector('.result').style.visibility = 'visible';
-
+                        
                         if (geminiData.response && Array.isArray(geminiData.response)) {
                             const ul = document.createElement('ul');
                             ul.classList.add('new-cta-list'); // Add class to ul
@@ -849,30 +820,18 @@
                                 ul.appendChild(li);
                             });
                             geminiPrimaryContent.appendChild(ul);
-                        } else {
-                            const p = document.createElement('p');
-                            p.classList.add('new-cta'); // Add class to p
-                            p.innerHTML = geminiData.response;
-                            geminiPrimaryContent.appendChild(p);
                         }
                         if (geminiData.explanation) {
                             geminiExplanationText.textContent = geminiData.explanation;
+                            geminiExplanationText.style.marginTop = '16px'; // Add margin top when explanation is present
                         }
                         // Set max-height to allow expansion
                         document.getElementById('geminiResponseBox').style.maxHeight = '1000px'; // Adjust as needed
 
                         // Trigger fade-in for text
                         setTimeout(() => {
-                            const newCtaElement = geminiPrimaryContent.querySelector('.new-cta') || geminiPrimaryContent.querySelector('.new-cta-list');
-                            if (newCtaElement) {
-                                newCtaElement.style.opacity = '1';
-                                if (newCtaElement.classList.contains('new-cta-list')) {
-                                    Array.from(newCtaElement.children).forEach(li => {
-                                        li.style.opacity = '1';
-                                    });
-                                }
-                            }
-                            geminiExplanationText.style.opacity = '1';
+                            document.getElementById('geminiResponseBox').querySelector('.result').style.opacity = '1';
+                            document.getElementById('geminiResponseBox').querySelector('.result').style.visibility = 'visible';
                         }, 500); // Increased delay to allow box expansion to complete
                     } else {
                         geminiPrimaryContent.innerHTML = 'Error: ' + (geminiData.error || 'Something went wrong with Gemini.');
