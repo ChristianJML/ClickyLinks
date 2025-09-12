@@ -72,6 +72,9 @@
             #detailModal {
                 display: none; /* Hide the modal on larger screens */
             }
+            header {
+                text-align: left; /* Left align header text on larger screens */
+            }
         }
         input[type="text"] {
             flex-grow: 1;
@@ -124,13 +127,52 @@
             text-align: left; /* Left align text within response boxes */
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
+            max-height: 0; /* Initially collapsed */
+            overflow: hidden; /* Hide overflowing content */
+            transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out, max-height 0.5s ease-in-out; /* Add max-height to transition */
+        }
+        .inner-box {
+            display: flex;
+            flex-direction: column;
+        }
+        .loader {
+            font-size: 1em; /* 16px */
+            opacity: 1; /* Visible initially */
+            transition: opacity 0.5s ease-in-out; /* Fade out effect */
+        }
+        .result {
+            opacity: 0; /* Hidden initially */
+            visibility: hidden; /* Hidden initially */
+            transition: opacity 0.5s ease-in-out; /* Fade in effect */
         }
         .response-box h2 {
             margin-top: 0; /* Remove top margin from H2 inside response-box */
+            margin-bottom: 0; /* Ensure no bottom margin on H2 */
+        }
+        .response-box h2 {
+            margin-bottom: 0; /* Ensure no bottom margin on H2 */
+        }
+        div[id$="PrimaryContent"] {
+            margin-top: 10px; /* Add top margin to the primary content div */
         }
         .response-box p {
             margin-bottom: 0; /* Remove bottom margin from P inside response-box */
+        }
+        .new-cta {
+            font-size: 1em; /* 16px */
+            opacity: 0; /* Initial opacity for fade-in */
+            transition: opacity 0.5s ease-in-out; /* Transition for fade-in */
+        }
+        .new-cta-list li {
+            font-size: 1em; /* 16px */
+            opacity: 0; /* Initial opacity for fade-in */
+            transition: opacity 0.5s ease-in-out; /* Transition for fade-in */
+        }
+        .why-it-works {
+            font-size: 0.875em; /* 14px */
+            margin-top: 10px; /* Add some space above the explanation */
+            opacity: 0; /* Initial opacity for fade-in */
+            transition: opacity 0.5s ease-in-out; /* Transition for fade-in */
         }
         h1 {
             font-size: 3em;
@@ -182,7 +224,7 @@
         }
         #ctaEssayModal .modal-content {
             max-width: 800px;
-            max-height: 100%; /* Fill 100% of the available height within the padded parent */
+            max-height: 90%; /* Updated max-height for CTA essay modal to 90% */
             background-color: #E1E4E1; /* Updated background color */
             border: 2px solid #261201; /* Added border */
             margin: auto; /* Centered within the padded modal */
@@ -288,8 +330,11 @@
         }
         .response-box ul,
         .response-box p {
-            font-size: 1em; /* Ensure consistent font size */
+            font-size: 0.875em; /* Ensure consistent font size, updated to 14px */
             margin-bottom: 0; /* Remove bottom margin */
+        }
+        .response-box ul li {
+            font-size: 1em; /* Keep list item font size at 16px / 1em */
         }
         .response-box ul li:last-child {
             margin-bottom: 0; /* Remove bottom margin from the last list item */
@@ -301,6 +346,11 @@
         .response-box ul {
             list-style-type: none;
             padding: 0;
+            font-size: 1em; /* Set font size of ul to 1em */
+        }
+        .new-cta-list {
+            opacity: 0; /* Initial opacity for fade-in */
+            transition: opacity 0.5s ease-in-out; /* Transition for fade-in */
         }
         .response-box li {
             margin-bottom: 10px;
@@ -348,15 +398,33 @@
         <div class="main-content-area">
             <div class="response-box" id="chatGPTResponseBox">
                 <h2>ChatGPT <span class="model-name">(gpt-4)</span></h2>
-                <p id="chatGPTresponseText"></p>
+                <div class="inner-box">
+                    <p class="loader">Thinking...</p>
+                    <div class="result">
+                        <div id="chatGPTPrimaryContent"></div>
+                        <p class="why-it-works" id="chatGPTExplanationText"></p>
+                    </div>
+                </div>
             </div>
             <div class="response-box" id="claudeResponseBox">
                 <h2>Claude <span class="model-name">(sonnet-4)</span></h2>
-                <p id="claudeResponseText"></p>
+                <div class="inner-box">
+                    <p class="loader">Thinking...</p>
+                    <div class="result">
+                        <div id="claudePrimaryContent"></div>
+                        <p class="why-it-works" id="claudeExplanationText"></p>
+                    </div>
+                </div>
             </div>
             <div class="response-box" id="geminiResponseBox">
-                <h2>Gemini <span class="model-name">(gemini-1.5-flash)</span></h2>
-                <p id="geminiResponseText"></p>
+                <h2>Gemini <span class="model-name">(1.5-flash)</span></h2>
+                <div class="inner-box">
+                    <p class="loader">Thinking...</p>
+                    <div class="result">
+                        <div id="geminiPrimaryContent"></div>
+                        <p class="why-it-works" id="geminiExplanationText"></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -504,9 +572,12 @@
             const textInput = document.getElementById('mainInput'); // Changed from textInput
             const submitButton = document.getElementById('submitButton');
             const addDetailsButton = document.getElementById('addDetailsButton');
-            const chatGPTResponseText = document.getElementById('chatGPTresponseText');
-            const claudeResponseText = document.getElementById('claudeResponseText');
-            const geminiResponseText = document.getElementById('geminiResponseText'); // Added Gemini reference
+            const chatGPTPrimaryContent = document.getElementById('chatGPTPrimaryContent');
+            const chatGPTExplanationText = document.getElementById('chatGPTExplanationText');
+            const claudePrimaryContent = document.getElementById('claudePrimaryContent');
+            const claudeExplanationText = document.getElementById('claudeExplanationText');
+            const geminiPrimaryContent = document.getElementById('geminiPrimaryContent');
+            const geminiExplanationText = document.getElementById('geminiExplanationText');
             const detailModal = document.getElementById('detailModal');
             const closeButton = detailModal.querySelector('.close-button');
             const applyDetailsButton = document.getElementById('applyDetailsButton');
@@ -558,13 +629,49 @@
 
             document.getElementById('submitButton').addEventListener('click', async () => {
                 const textInput = document.getElementById('mainInput').value; // Changed from textInput
-                const chatGPTResponseText = document.getElementById('chatGPTresponseText');
-                const claudeResponseText = document.getElementById('claudeResponseText');
-                const geminiResponseText = document.getElementById('geminiResponseText'); // Added Gemini reference
+                const chatGPTPrimaryContent = document.getElementById('chatGPTPrimaryContent');
+                const chatGPTExplanationText = document.getElementById('chatGPTExplanationText');
+                const claudePrimaryContent = document.getElementById('claudePrimaryContent');
+                const claudeExplanationText = document.getElementById('claudeExplanationText');
+                const geminiPrimaryContent = document.getElementById('geminiPrimaryContent');
+                const geminiExplanationText = document.getElementById('geminiExplanationText');
 
-                chatGPTResponseText.textContent = 'Thinking...';
-                claudeResponseText.textContent = 'Thinking...';
-                geminiResponseText.textContent = 'Thinking...'; // Added Gemini reference
+                // Make response boxes visible immediately
+                document.getElementById('chatGPTResponseBox').style.opacity = '1';
+                document.getElementById('chatGPTResponseBox').style.visibility = 'visible';
+                document.getElementById('claudeResponseBox').style.opacity = '1';
+                document.getElementById('claudeResponseBox').style.visibility = 'visible';
+                document.getElementById('geminiResponseBox').style.opacity = '1';
+                document.getElementById('geminiResponseBox').style.visibility = 'visible';
+                
+                // Set initial max-height for boxes to show loader with padding
+                document.getElementById('chatGPTResponseBox').style.maxHeight = '100px'; // Temporary height for loader
+                document.getElementById('claudeResponseBox').style.maxHeight = '100px'; // Temporary height for loader
+                document.getElementById('geminiResponseBox').style.maxHeight = '100px'; // Temporary height for loader
+
+                // Trigger scale-in animation for boxes
+                // document.getElementById('chatGPTResponseBox').style.transform = 'scale(1)'; // Removed as per edit hint
+                // document.getElementById('claudeResponseBox').style.transform = 'scale(1)'; // Removed as per edit hint
+                // document.getElementById('geminiResponseBox').style.transform = 'scale(1)'; // Removed as per edit hint
+
+                // Clear previous content from PrimaryContent, as loader now handles 'Thinking...'
+                chatGPTPrimaryContent.innerHTML = ''; 
+                chatGPTExplanationText.textContent = ''; // Clear previous explanation
+                claudePrimaryContent.innerHTML = '';
+                claudeExplanationText.textContent = ''; // Clear previous explanation
+                geminiPrimaryContent.innerHTML = '';
+                geminiExplanationText.textContent = ''; // Clear previous explanation
+
+                // Show loader and hide result initially
+                document.getElementById('chatGPTResponseBox').querySelector('.loader').style.opacity = '1';
+                document.getElementById('chatGPTResponseBox').querySelector('.result').style.opacity = '0';
+                document.getElementById('chatGPTResponseBox').querySelector('.result').style.visibility = 'hidden';
+                document.getElementById('claudeResponseBox').querySelector('.loader').style.opacity = '1';
+                document.getElementById('claudeResponseBox').querySelector('.result').style.opacity = '0';
+                document.getElementById('claudeResponseBox').querySelector('.result').style.visibility = 'hidden';
+                document.getElementById('geminiResponseBox').querySelector('.loader').style.opacity = '1';
+                document.getElementById('geminiResponseBox').querySelector('.result').style.opacity = '0';
+                document.getElementById('geminiResponseBox').querySelector('.result').style.visibility = 'hidden';
 
                 const requestBody = {
                     message: textInput,
@@ -592,31 +699,56 @@
                     const chatGPTData = await chatGPTResponse.json();
 
                     if (chatGPTResponse.ok) {
-                        chatGPTResponseText.innerHTML = ''; // Clear previous responses
+                        chatGPTPrimaryContent.innerHTML = ''; // Clear previous responses
+                        // Hide loader and show result
+                        const chatGPTLoader = document.getElementById('chatGPTResponseBox').querySelector('.loader');
+                        chatGPTLoader.style.opacity = '0';
+                        chatGPTLoader.addEventListener('transitionend', function handler() {
+                            chatGPTLoader.style.display = 'none';
+                            chatGPTLoader.removeEventListener('transitionend', handler);
+                        });
+                        document.getElementById('chatGPTResponseBox').querySelector('.result').style.opacity = '1';
+                        document.getElementById('chatGPTResponseBox').querySelector('.result').style.visibility = 'visible';
+
                         if (chatGPTData.response && Array.isArray(chatGPTData.response)) {
                             const ul = document.createElement('ul');
+                            ul.classList.add('new-cta-list'); // Add class to ul
                             chatGPTData.response.forEach(suggestion => {
                                 const li = document.createElement('li');
                                 li.innerHTML = suggestion;
                                 ul.appendChild(li);
                             });
-                            chatGPTResponseText.appendChild(ul);
+                            chatGPTPrimaryContent.appendChild(ul);
                         } else {
-                            chatGPTResponseText.innerHTML = chatGPTData.response;
+                            const p = document.createElement('p');
+                            p.classList.add('new-cta'); // Add class to p
+                            p.innerHTML = chatGPTData.response;
+                            chatGPTPrimaryContent.appendChild(p);
                         }
                         if (chatGPTData.explanation) {
-                            const explanationP = document.createElement('p');
-                            explanationP.textContent = chatGPTData.explanation;
-                            explanationP.style.marginTop = '10px';
-                            chatGPTResponseText.appendChild(explanationP);
+                            chatGPTExplanationText.textContent = chatGPTData.explanation;
                         }
-                        document.getElementById('chatGPTResponseBox').style.opacity = '1';
-                        document.getElementById('chatGPTResponseBox').style.visibility = 'visible';
+                        // Set max-height to allow expansion
+                        document.getElementById('chatGPTResponseBox').style.maxHeight = '1000px'; // Adjust as needed
+
+                        // Trigger fade-in for text
+                        setTimeout(() => {
+                            const newCtaElement = chatGPTPrimaryContent.querySelector('.new-cta') || chatGPTPrimaryContent.querySelector('.new-cta-list');
+                            if (newCtaElement) {
+                                newCtaElement.style.opacity = '1';
+                                if (newCtaElement.classList.contains('new-cta-list')) {
+                                    Array.from(newCtaElement.children).forEach(li => {
+                                        li.style.opacity = '1';
+                                    });
+                                }
+                            }
+                            chatGPTExplanationText.style.opacity = '1';
+                        }, 500); // Increased delay to allow box expansion to complete
                     } else {
-                        chatGPTResponseText.textContent = 'Error: ' + (chatGPTData.error || 'Something went wrong with ChatGPT.');
+                        chatGPTPrimaryContent.innerHTML = 'Error: ' + (chatGPTData.error || 'Something went wrong with ChatGPT.');
                     }
                 } catch (error) {
-                    chatGPTResponseText.textContent = 'Network Error (ChatGPT): ' + error.message;
+                    chatGPTPrimaryContent.innerHTML = 'Network Error (ChatGPT): ' + error.message;
                 }
 
                 try {
@@ -632,31 +764,56 @@
                     const claudeData = await claudeResponse.json();
 
                     if (claudeResponse.ok) {
-                        claudeResponseText.innerHTML = ''; // Clear previous responses
+                        claudePrimaryContent.innerHTML = ''; // Clear previous responses
+                        // Hide loader and show result
+                        const claudeLoader = document.getElementById('claudeResponseBox').querySelector('.loader');
+                        claudeLoader.style.opacity = '0';
+                        claudeLoader.addEventListener('transitionend', function handler() {
+                            claudeLoader.style.display = 'none';
+                            claudeLoader.removeEventListener('transitionend', handler);
+                        });
+                        document.getElementById('claudeResponseBox').querySelector('.result').style.opacity = '1';
+                        document.getElementById('claudeResponseBox').querySelector('.result').style.visibility = 'visible';
+
                         if (claudeData.response && Array.isArray(claudeData.response)) {
                             const ul = document.createElement('ul');
+                            ul.classList.add('new-cta-list'); // Add class to ul
                             claudeData.response.forEach(suggestion => {
                                 const li = document.createElement('li');
                                 li.innerHTML = suggestion;
                                 ul.appendChild(li);
                             });
-                            claudeResponseText.appendChild(ul);
+                            claudePrimaryContent.appendChild(ul);
                         } else {
-                            claudeResponseText.innerHTML = claudeData.response;
+                            const p = document.createElement('p');
+                            p.classList.add('new-cta'); // Add class to p
+                            p.innerHTML = claudeData.response;
+                            claudePrimaryContent.appendChild(p);
                         }
                         if (claudeData.explanation) {
-                            const explanationP = document.createElement('p');
-                            explanationP.textContent = claudeData.explanation;
-                            explanationP.style.marginTop = '10px';
-                            claudeResponseText.appendChild(explanationP);
+                            claudeExplanationText.textContent = claudeData.explanation;
                         }
-                        document.getElementById('claudeResponseBox').style.opacity = '1';
-                        document.getElementById('claudeResponseBox').style.visibility = 'visible';
+                        // Set max-height to allow expansion
+                        document.getElementById('claudeResponseBox').style.maxHeight = '1000px'; // Adjust as needed
+
+                        // Trigger fade-in for text
+                        setTimeout(() => {
+                            const newCtaElement = claudePrimaryContent.querySelector('.new-cta') || claudePrimaryContent.querySelector('.new-cta-list');
+                            if (newCtaElement) {
+                                newCtaElement.style.opacity = '1';
+                                if (newCtaElement.classList.contains('new-cta-list')) {
+                                    Array.from(newCtaElement.children).forEach(li => {
+                                        li.style.opacity = '1';
+                                    });
+                                }
+                            }
+                            claudeExplanationText.style.opacity = '1';
+                        }, 500); // Increased delay to allow box expansion to complete
                     } else {
-                        claudeResponseText.textContent = 'Error: ' + (claudeData.error || 'Something went wrong with Claude.');
+                        claudePrimaryContent.innerHTML = 'Error: ' + (claudeData.error || 'Something went wrong with Claude.');
                     }
                 } catch (error) {
-                    claudeResponseText.textContent = 'Network Error (Claude): ' + error.message;
+                    claudePrimaryContent.innerHTML = 'Network Error (Claude): ' + error.message;
                 }
 
                 try {
@@ -672,31 +829,56 @@
                     const geminiData = await geminiResponse.json();
 
                     if (geminiResponse.ok) {
-                        geminiResponseText.innerHTML = ''; // Clear previous responses
+                        geminiPrimaryContent.innerHTML = ''; // Clear previous responses
+                        // Hide loader and show result
+                        const geminiLoader = document.getElementById('geminiResponseBox').querySelector('.loader');
+                        geminiLoader.style.opacity = '0';
+                        geminiLoader.addEventListener('transitionend', function handler() {
+                            geminiLoader.style.display = 'none';
+                            geminiLoader.removeEventListener('transitionend', handler);
+                        });
+                        document.getElementById('geminiResponseBox').querySelector('.result').style.opacity = '1';
+                        document.getElementById('geminiResponseBox').querySelector('.result').style.visibility = 'visible';
+
                         if (geminiData.response && Array.isArray(geminiData.response)) {
                             const ul = document.createElement('ul');
+                            ul.classList.add('new-cta-list'); // Add class to ul
                             geminiData.response.forEach(suggestion => {
                                 const li = document.createElement('li');
                                 li.innerHTML = suggestion;
                                 ul.appendChild(li);
                             });
-                            geminiResponseText.appendChild(ul);
+                            geminiPrimaryContent.appendChild(ul);
                         } else {
-                            geminiResponseText.innerHTML = geminiData.response;
+                            const p = document.createElement('p');
+                            p.classList.add('new-cta'); // Add class to p
+                            p.innerHTML = geminiData.response;
+                            geminiPrimaryContent.appendChild(p);
                         }
                         if (geminiData.explanation) {
-                            const explanationP = document.createElement('p');
-                            explanationP.textContent = geminiData.explanation;
-                            explanationP.style.marginTop = '10px';
-                            geminiResponseText.appendChild(explanationP);
+                            geminiExplanationText.textContent = geminiData.explanation;
                         }
-                        document.getElementById('geminiResponseBox').style.opacity = '1';
-                        document.getElementById('geminiResponseBox').style.visibility = 'visible';
+                        // Set max-height to allow expansion
+                        document.getElementById('geminiResponseBox').style.maxHeight = '1000px'; // Adjust as needed
+
+                        // Trigger fade-in for text
+                        setTimeout(() => {
+                            const newCtaElement = geminiPrimaryContent.querySelector('.new-cta') || geminiPrimaryContent.querySelector('.new-cta-list');
+                            if (newCtaElement) {
+                                newCtaElement.style.opacity = '1';
+                                if (newCtaElement.classList.contains('new-cta-list')) {
+                                    Array.from(newCtaElement.children).forEach(li => {
+                                        li.style.opacity = '1';
+                                    });
+                                }
+                            }
+                            geminiExplanationText.style.opacity = '1';
+                        }, 500); // Increased delay to allow box expansion to complete
                     } else {
-                        geminiResponseText.textContent = 'Error: ' + (geminiData.error || 'Something went wrong with Gemini.');
+                        geminiPrimaryContent.innerHTML = 'Error: ' + (geminiData.error || 'Something went wrong with Gemini.');
                     }
                 } catch (error) {
-                    geminiResponseText.textContent = 'Network Error (Gemini): ' + error.message;
+                    geminiPrimaryContent.innerHTML = 'Network Error (Gemini): ' + error.message;
                 }
             });
             const learnWhyLink = document.getElementById('learnWhyLink');
