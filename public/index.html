@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ClickyWords</title>
+    <title>ClickyLinks</title>
     <meta name="description" content="Burn boring CTAs. Write actions people want to take. An AI-powered tool that helps you craft clear, compelling calls-to-action that convert.">
     <style>
         html, body {
@@ -15,10 +15,10 @@
             font-family: Arial, sans-serif;
             background-color: #E1E4E1; /* Updated background color */
             display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            flex-direction: column; /* Changed to column to stack main content */
+            min-height: 100vh; /* Ensure body takes at least full viewport height */
             color: #261201; /* Updated text color */
+            overflow-y: auto; /* Allow vertical scrolling for body content */
         }
         .container {
             text-align: center;
@@ -28,17 +28,33 @@
             display: flex; /* Enable flexbox for vertical layout */
             flex-direction: column; /* Stack children vertically */
             gap: 16px; /* Add 16px gap between children, specifically for response boxes */
+            flex-grow: 1; /* Allow it to grow and fill available space */
         }
         /* Responsive Wrapper for larger screens */
         .responsive-wrapper {
             display: flex;
             width: 100%;
-            min-height: 100vh; /* Ensure wrapper takes full viewport height */
+            height: 100%; /* Ensure wrapper takes full height */
+            flex-grow: 1; /* Allow it to grow and fill available space */
+            min-height: 0; /* Crucial for flex item in column that contains other flex items */
         }
         .main-content-area {
             background-image: radial-gradient(circle at center, #261201 2px, transparent 3px); /* Black circles */
             background-size: 20px 20px; /* Adjust size of the repeating pattern */
             display: none; /* Hidden by default */
+        }
+        /* New CSS for controls-box */
+        .controls-box {
+            display: none; /* Hidden by default */
+            flex-direction: column; /* Stack children vertically */
+            gap: 16px; /* Consistent vertical spacing */
+            padding: 20px; /* Add padding inside the box */
+            border: 2px solid #261201; /* Add border for visibility */
+            border-radius: 8px;
+            background-color: #E1E4E1; /* Match background with page */
+            margin-top: 16px; /* Add margin to separate from buttons */
+            height: 100%; /* Add height to controls-box */
+            overflow-y: scroll; /* Add overflow-y to controls-box */
         }
         @media (min-width: 768px) {
             .responsive-wrapper {
@@ -53,6 +69,9 @@
                 gap: 16px; /* Ensure gap for items within container */
                 display: flex; /* Ensure container is a flex container */
                 flex-direction: column; /* Stack children vertically */
+                height: 100%; /* Ensure container takes full height of responsive-wrapper */
+                overflow-y: auto; /* Allow scrolling within the container */
+                flex-shrink: 0; /* Prevent shrinking below content */
             }
             .main-content-area {
                 display: flex; /* Enable flexbox for centering */
@@ -61,6 +80,9 @@
                 align-items: center; /* Center content horizontally */
                 width: 67%; /* 67% width on large screens */
                 gap: 24px; /* Add gap between response boxes */
+                height: 100%; /* Ensure it takes full available height */
+                flex-grow: 1; /* Allow it to grow and fill available space */
+                overflow-y: auto; /* Allow main-content-area to scroll if content overflows */
             }
             .response-box {
                 max-width: 600px; /* Set max-width for response boxes */
@@ -101,23 +123,23 @@
         }
         button {
             padding: 10px 15px;
-            border: 2px solid #ED8008; /* Added 2px border */
+            border: 2px solid #36679b; /* Updated border */
             border-radius: 5px;
-            background-color: #ED8008; /* Updated button background color */
-            color: #261201; /* Updated button text color */
+            background-color: #36679b; /* Updated button background color */
+            color: #ffffff; /* Updated button text color */
             cursor: pointer;
             font-size: 1em;
         }
         button:hover {
-            background-color: #d67307; /* Slightly darker on hover */
+            background-color: #2a537f; /* Slightly darker on hover */
         }
         #addDetailsButton {
             background-color: transparent;
             color: #261201;
-            border: 2px solid #ED8008; /* Updated border to 2px */
+            border: 2px solid #36679b; /* Updated border to 2px */
         }
         #addDetailsButton:hover {
-            background-color: rgba(237, 128, 8, 0.1); /* Slight background on hover */
+            background-color: rgba(54, 103, 155, 0.1); /* Slight background on hover with new color */
         }
         .response-box {
             background-color: #E1E4E1; /* Updated background color */
@@ -229,6 +251,7 @@
             max-height: 100%; /* Fill 100% of the available height within the padded parent */
             box-sizing: border-box; /* Ensure consistent box model */
         }
+        /* The detailModal should remain hidden by default and only used for other purposes if needed */
         /* New styles for the Add Extra Detail modal itself */
         #detailModal.modal {
             padding-top: 24px; /* Add top padding to the modal container */
@@ -386,7 +409,46 @@
             <div class="input-buttons-container">
                 <input type="text" id="mainInput" value="" autofocus>
                 <button id="submitButton">Fix my link</button>
-                <button id="addDetailsButton" class="modal-button">Add extra detail</button>
+                <button id="addDetailsButton" class="modal-button">Settings</button>
+            </div>
+            <div class="controls-box" id="controlsBox">
+                <div class="control-group">
+                    <label for="numSuggestions">Number of Suggestions: <span id="numSuggestionsValue">1</span></label>
+                    <input type="range" id="numSuggestions" min="1" max="3" value="1">
+                </div>
+                <div class="control-group">
+                    <label for="playfulProfessional"><span>Playful</span><span>Professional</span></label>
+                    <input type="range" id="playfulProfessional" min="-5" max="5" value="-1">
+                </div>
+                <div class="control-group">
+                    <label for="length"><span>Short & Punchy</span><span>Long & Descriptive</span></label>
+                    <input type="range" id="length" min="-5" max="5" value="-5">
+                </div>
+                <div class="control-group">
+                    <div class="switch-container">
+                        <label for="includeExplanation">Include explanations</label>
+                        <label class="switch">
+                            <input type="checkbox" id="includeExplanation" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="whatCompanyDoes">What the company does:</label>
+                    <input type="text" id="whatCompanyDoes" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                </div>
+                <div class="control-group">
+                    <label for="targetAudience">Target audience</label>
+                    <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                </div>
+                <div class="control-group">
+                    <label for="banWords">Ban words (comma-separated):</label>
+                    <input type="text" id="banWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                </div>
+                <div class="control-group">
+                    <label for="keepWords">Keep words (comma-separated):</label>
+                    <input type="text" id="keepWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                </div>
             </div>
         </div>
         <div class="main-content-area">
@@ -417,52 +479,6 @@
                     <p class="why-it-works" id="geminiExplanationText"></p>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <div id="detailModal" class="modal">
-        <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h3>Add extra detail</h3>
-            <div class="control-group">
-                <label for="numSuggestions">Number of Suggestions: <span id="numSuggestionsValue">1</span></label>
-                <input type="range" id="numSuggestions" min="1" max="3" value="1">
-            </div>
-            <div class="control-group">
-                
-                <label for="playfulProfessional"><span>Playful</span><span>Professional</span></label>
-                <input type="range" id="playfulProfessional" min="-5" max="5" value="-1">
-            </div>
-            <div class="control-group">
-                <label for="length"><span>Short & Punchy</span><span>Long & Descriptive</span></label>
-                <input type="range" id="length" min="-5" max="5" value="-5">
-            </div>
-            <div class="control-group">
-                <div class="switch-container">
-                    <label for="includeExplanation">Include explanations</label>
-                    <label class="switch">
-                        <input type="checkbox" id="includeExplanation" checked>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-            </div>
-            <div class="control-group">
-                <label for="whatCompanyDoes">What the company does:</label>
-                <input type="text" id="whatCompanyDoes" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-            </div>
-            <div class="control-group">
-                <label for="targetAudience">Target audience</label>
-                <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-            </div>
-            <div class="control-group">
-                <label for="banWords">Ban words (comma-separated):</label>
-                <input type="text" id="banWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-            </div>
-            <div class="control-group">
-                <label for="keepWords">Keep words (comma-separated):</label>
-                <input type="text" id="keepWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-            </div>
-            <button id="applyDetailsButton">Apply</button>
         </div>
     </div>
 
@@ -569,9 +585,10 @@
             const claudeExplanationText = document.getElementById('claudeExplanationText');
             const geminiPrimaryContent = document.getElementById('geminiPrimaryContent');
             const geminiExplanationText = document.getElementById('geminiExplanationText');
-            const detailModal = document.getElementById('detailModal');
-            const closeButton = detailModal.querySelector('.close-button');
-            const applyDetailsButton = document.getElementById('applyDetailsButton');
+            // const detailModal = document.getElementById('detailModal'); // Removed as modal is removed
+            // const closeButton = detailModal.querySelector('.close-button'); // Removed as modal is removed
+            const controlsBox = document.getElementById('controlsBox'); // Get the new controls box
+            // const applyDetailsButton = document.getElementById('applyDetailsButton'); // Removed as it's no longer used
 
             const numSuggestionsSlider = document.getElementById('numSuggestions');
             const numSuggestionsValue = document.getElementById('numSuggestionsValue');
@@ -590,27 +607,29 @@
             // Update slider value displays
             numSuggestionsSlider.oninput = () => { numSuggestionsValue.textContent = numSuggestionsSlider.value; };
 
-            // Open the modal
+            // Open/close the controls box
             addDetailsButton.addEventListener('click', () => {
-                detailModal.style.display = 'flex'; // Use flex to center the modal
-            });
-
-            // Close the modal
-            closeButton.addEventListener('click', () => {
-                detailModal.style.display = 'none';
-            });
-
-            // Close the modal if clicked outside
-            window.addEventListener('click', (event) => {
-                if (event.target == detailModal) {
-                    detailModal.style.display = 'none';
+                if (controlsBox.style.display === 'flex') {
+                    controlsBox.style.display = 'none';
+                } else {
+                    controlsBox.style.display = 'flex';
                 }
             });
 
-            applyDetailsButton.addEventListener('click', () => {
-                // Here you would capture the values and pass them to your main logic
-                detailModal.style.display = 'none'; // Close modal after applying
-            });
+            // Removed modal close listeners as detailModal is removed
+            // closeButton.addEventListener('click', () => {
+            //     detailModal.style.display = 'none';
+            // });
+            // window.addEventListener('click', (event) => {
+            //     if (event.target == detailModal) {
+            //         detailModal.style.display = 'none';
+            //     }
+            // });
+
+            // Removed applyDetailsButton event listener as controls are now directly visible
+            // applyDetailsButton.addEventListener('click', () => {
+            //     detailModal.style.display = 'none';
+            // });
 
             document.getElementById('mainInput').addEventListener('keydown', (event) => {
                 if (event.key === 'Enter') {
