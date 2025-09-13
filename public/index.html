@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ClickyLinks</title>
     <meta name="description" content="Burn boring CTAs. Write actions people want to take. An AI-powered tool that helps you craft clear, compelling calls-to-action that convert.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
     <style>
         html, body {
             height: 100%; /* Ensure html and body take full viewport height */
@@ -69,7 +72,6 @@
                 gap: 16px; /* Ensure gap for items within container */
                 display: flex; /* Ensure container is a flex container */
                 flex-direction: column; /* Stack children vertically */
-                height: 100%; /* Ensure container takes full height of responsive-wrapper */
                 overflow-y: auto; /* Allow scrolling within the container */
                 flex-shrink: 0; /* Prevent shrinking below content */
             }
@@ -193,6 +195,10 @@
         h1 {
             font-size: 3em;
             margin-bottom: 0; /* Removed margin-bottom */
+            margin-top: 0; /* Removed top margin */
+            font-family: "Outfit", sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.03em; /* Added letter-spacing */
         }
         p {
             font-size: 1.2em;
@@ -285,6 +291,16 @@
         }
         .control-group h4 {
             margin-bottom: 10px;
+        }
+        h2 {
+            font-family: "Outfit", sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.03em; /* Added letter-spacing */
+        }
+        h3 {
+            font-family: "Outfit", sans-serif;
+            font-weight: 700;
+            letter-spacing: 0.03em; /* Added letter-spacing */
         }
         input[type="range"] {
             width: 100%;
