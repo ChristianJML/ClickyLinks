@@ -213,6 +213,7 @@
         .why-it-works {
             font-size: 0.875em; /* 14px */
             margin-top: 0; /* Changed to 0 initially */
+            display: none; /* Hide by default to prevent excessive spacing */
             /* Removed opacity and transition, now handled by parent .result */
         }
         h1 {
@@ -706,18 +707,24 @@
                 // Clear previous content from PrimaryContent, as loader now handles 'Thinking...'
                 chatGPTPrimaryContent.innerHTML = ''; 
                 chatGPTExplanationText.textContent = ''; // Clear previous explanation
+                chatGPTExplanationText.style.display = 'none'; // Hide explanation text area
                 claudePrimaryContent.innerHTML = '';
                 claudeExplanationText.textContent = ''; // Clear previous explanation
+                claudeExplanationText.style.display = 'none'; // Hide explanation text area
                 geminiPrimaryContent.innerHTML = '';
                 geminiExplanationText.textContent = ''; // Clear previous explanation
+                geminiExplanationText.style.display = 'none'; // Hide explanation text area
 
-                // Show loader and hide result initially
+                // Ensure loader is visible and result is hidden initially
+                document.getElementById('chatGPTResponseBox').querySelector('.top-area .loader').style.display = 'flex'; // Ensure display is not 'none'
                 document.getElementById('chatGPTResponseBox').querySelector('.top-area .loader').style.opacity = '1';
                 document.getElementById('chatGPTResponseBox').querySelector('.result').style.opacity = '0';
                 document.getElementById('chatGPTResponseBox').querySelector('.result').style.visibility = 'hidden';
+                document.getElementById('claudeResponseBox').querySelector('.top-area .loader').style.display = 'flex'; // Ensure display is not 'none'
                 document.getElementById('claudeResponseBox').querySelector('.top-area .loader').style.opacity = '1';
                 document.getElementById('claudeResponseBox').querySelector('.result').style.opacity = '0';
                 document.getElementById('claudeResponseBox').querySelector('.result').style.visibility = 'hidden';
+                document.getElementById('geminiResponseBox').querySelector('.top-area .loader').style.display = 'flex'; // Ensure display is not 'none'
                 document.getElementById('geminiResponseBox').querySelector('.top-area .loader').style.opacity = '1';
                 document.getElementById('geminiResponseBox').querySelector('.result').style.opacity = '0';
                 document.getElementById('geminiResponseBox').querySelector('.result').style.visibility = 'hidden';
@@ -775,6 +782,7 @@
                         if (chatGPTData.explanation) {
                             chatGPTExplanationText.textContent = chatGPTData.explanation;
                             chatGPTExplanationText.style.marginTop = '16px'; // Add margin top when explanation is present
+                            chatGPTExplanationText.style.display = 'block'; // Show explanation text area
                         }
                         // Set max-height to allow expansion
                         document.getElementById('chatGPTResponseBox').style.maxHeight = '1000px'; // Adjust as needed
@@ -831,6 +839,7 @@
                         if (claudeData.explanation) {
                             claudeExplanationText.textContent = claudeData.explanation;
                             claudeExplanationText.style.marginTop = '16px'; // Add margin top when explanation is present
+                            claudeExplanationText.style.display = 'block'; // Show explanation text area
                         }
                         // Set max-height to allow expansion
                         document.getElementById('claudeResponseBox').style.maxHeight = '1000px'; // Adjust as needed
@@ -882,6 +891,7 @@
                         if (geminiData.explanation) {
                             geminiExplanationText.textContent = geminiData.explanation;
                             geminiExplanationText.style.marginTop = '16px'; // Add margin top when explanation is present
+                            geminiExplanationText.style.display = 'block'; // Show explanation text area
                         }
                         // Set max-height to allow expansion
                         document.getElementById('geminiResponseBox').style.maxHeight = '1000px'; // Adjust as needed
