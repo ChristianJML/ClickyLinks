@@ -108,6 +108,21 @@
                 text-align: left; /* Left align header text on larger screens */
             }
         }
+        /* Breakpoint between 768px and 1280px */
+        @media (min-width: 768px) and (max-width: 1280px) {
+            .input-buttons-container {
+                flex-direction: column; /* Stack items vertically */
+                align-items: stretch; /* Stretch items to fill width */
+            }
+            .input-buttons-container input[type="text"] {
+                margin-right: 0; /* Remove right margin for full width input */
+                width: 100%; /* Ensure input is full width */
+                box-sizing: border-box; /* Include padding and border in the width calculation */
+            }
+            .input-buttons-container button {
+                width: 100%; /* Make buttons take full width */
+            }
+        }
         input[type="text"] {
             flex-grow: 1;
             padding: 10px;
