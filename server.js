@@ -294,7 +294,6 @@ app.post('/gemini-chat', async (req, res) => {
             const processedResponse = chatResponse.replace(/\[(.*?)\]/g, '<a href="#">$1</a>');
             suggestions = [processedResponse];
         }
-
         res.json({ response: suggestions, explanation: explanation });
 
     } catch (error) {

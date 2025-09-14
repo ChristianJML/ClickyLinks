@@ -45,6 +45,33 @@
             background-image: radial-gradient(circle at center, #261201 2px, transparent 3px); /* Original dots */
             background-size: 20px 20px; /* Adjust size of the repeating pattern */
             margin-top: 24px; /* Add space between container and main-content-area on mobile */
+            position: relative; /* Needed for pseudo-element */
+            overflow: hidden; /* Ensure pseudo-element doesn't overflow */
+        }
+        @keyframes dot-opacity-pulse {
+            0% { opacity: 0; }
+            50% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .main-content-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at center, #BDB9B3 2px, transparent 3px);
+            background-size: 20px 20px;
+            opacity: 0; /* Hidden by default */
+            visibility: hidden; /* Ensure it's not visible */
+            transition: opacity 0.5s ease-in-out; /* Smooth fade out */
+        }
+
+        .main-content-area.thinking-animation::before {
+            opacity: 1; /* Make visible when animating */
+            visibility: visible; /* Make visible when animating */
+            animation: dot-opacity-pulse 2s infinite ease-in-out alternate; /* Apply animation */
         }
         /* New CSS for controls-box */
         .controls-box {
@@ -61,6 +88,7 @@
         }
         .controls-content {
             max-height: 0;
+            padding: 0 20px; /* Increased horizontal padding to prevent slider cutoff */
             overflow: hidden;
             transition: max-height 0.5s ease-out;
         }
@@ -188,6 +216,8 @@
             max-height: 0; /* Initially collapsed */
             overflow: hidden; /* Hide overflowing content */
             transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out, max-height 0.5s ease-in-out; /* Add max-height to transition */
+            position: relative; /* Ensure stacking context */
+            z-index: 1; /* Bring response-box above main-content-area's pseudo-element */
         }
         .top-area {
             display: flex;
@@ -338,7 +368,7 @@
             letter-spacing: 0.03em; /* Added letter-spacing */
         }
         input[type="range"] {
-            width: calc(100% - 2px); /* Adjust width to account for thumb */
+            width: 100%;
             margin-top: 5px;
             accent-color: #3b4b59; /* Updated slider color */
         }
@@ -642,6 +672,7 @@
             const controlsBox = document.getElementById('controlsBox'); // Get the new controls box
             const controlsContent = controlsBox.querySelector('.controls-content'); // Get the new controls content div
             // const applyDetailsButton = document.getElementById('applyDetailsButton'); // Removed as it's no longer used
+            const mainContentArea = document.querySelector('.main-content-area'); // Get the main content area
 
             const numSuggestionsSlider = document.getElementById('numSuggestions');
             const numSuggestionsValue = document.getElementById('numSuggestionsValue');
@@ -696,6 +727,8 @@
                 const geminiPrimaryContent = document.getElementById('geminiPrimaryContent');
                 const geminiExplanationText = document.getElementById('geminiExplanationText');
 
+                mainContentArea.classList.add('thinking-animation'); // Start animation
+                
                 // Make response boxes visible immediately
                 document.getElementById('chatGPTResponseBox').style.opacity = '1';
                 document.getElementById('chatGPTResponseBox').style.visibility = 'visible';
@@ -738,6 +771,41 @@
                 document.getElementById('geminiResponseBox').querySelector('.top-area .loader').style.opacity = '1';
                 document.getElementById('geminiResponseBox').querySelector('.result').style.opacity = '0';
                 document.getElementById('geminiResponseBox').querySelector('.result').style.visibility = 'hidden';
+
+                let responsesCompleted = 0; // Initialize counter for completed responses
+
+                const handleResponseCompletion = () => {
+                    responsesCompleted++;
+                    if (responsesCompleted === 3) {
+                        mainContentArea.classList.remove('thinking-animation'); // Stop animation if all done
+                    }
+                };
+                
+                // Attach handleResponseCompletion to each loader's transitionend event
+                const chatGPTLoader = document.getElementById('chatGPTResponseBox').querySelector('.top-area .loader');
+                const claudeLoader = document.getElementById('claudeResponseBox').querySelector('.top-area .loader');
+                const geminiLoader = document.getElementById('geminiResponseBox').querySelector('.top-area .loader');
+                
+                chatGPTLoader.addEventListener('transitionend', function chatGPTLoaderHandler() {
+                    chatGPTLoader.style.display = 'none';
+                    chatGPTLoader.removeEventListener('transitionend', chatGPTLoaderHandler);
+                    handleResponseCompletion();
+                });
+                
+                claudeLoader.addEventListener('transitionend', function claudeLoaderHandler() {
+                    claudeLoader.style.display = 'none';
+                    claudeLoader.removeEventListener('transitionend', claudeLoaderHandler);
+                    handleResponseCompletion();
+                });
+                
+                geminiLoader.addEventListener('transitionend', function geminiLoaderHandler() {
+                    geminiLoader.style.display = 'none';
+                    geminiLoader.removeEventListener('transitionend', geminiLoaderHandler);
+                    handleResponseCompletion();
+                });
+
+                // Reset responsesCompleted at the start of each submission
+                responsesCompleted = 0; // Reset counter for new submission
 
                 const requestBody = {
                     message: textInput,
@@ -807,6 +875,13 @@
                     }
                 } catch (error) {
                     chatGPTPrimaryContent.innerHTML = 'Network Error (ChatGPT): ' + error.message;
+                    const chatGPTLoader = document.getElementById('chatGPTResponseBox').querySelector('.top-area .loader');
+                    chatGPTLoader.style.opacity = '0'; // Ensure loader fades out even on error
+                    chatGPTLoader.addEventListener('transitionend', function chatGPTErrorLoaderHandler() {
+                        chatGPTLoader.style.display = 'none';
+                        chatGPTLoader.removeEventListener('transitionend', chatGPTErrorLoaderHandler);
+                        handleResponseCompletion(); // Handle completion after loader is hidden
+                    });
                 }
 
                 try {
@@ -864,6 +939,13 @@
                     }
                 } catch (error) {
                     claudePrimaryContent.innerHTML = 'Network Error (Claude): ' + error.message;
+                    const claudeLoader = document.getElementById('claudeResponseBox').querySelector('.top-area .loader');
+                    claudeLoader.style.opacity = '0'; // Ensure loader fades out even on error
+                    claudeLoader.addEventListener('transitionend', function claudeErrorLoaderHandler() {
+                        claudeLoader.style.display = 'none';
+                        claudeLoader.removeEventListener('transitionend', claudeErrorLoaderHandler);
+                        handleResponseCompletion(); // Handle completion after loader is hidden
+                    });
                 }
 
                 try {
@@ -912,10 +994,17 @@
                             document.getElementById('geminiResponseBox').querySelector('.result').style.visibility = 'visible';
                         }, 500); // Increased delay to allow box expansion to complete
                     } else {
-                        geminiPrimaryContent.innerHTML = 'Error: ' + (geminiData.error || 'Something went wrong with Gemini.');
+                        geminiPrimaryContent.innerHTML = 'Error: ' + (geminiData.error || 'Something went wrong with Gemini. Please check the server console for details.');
                     }
                 } catch (error) {
                     geminiPrimaryContent.innerHTML = 'Network Error (Gemini): ' + error.message;
+                    const geminiLoader = document.getElementById('geminiResponseBox').querySelector('.top-area .loader');
+                    geminiLoader.style.opacity = '0'; // Ensure loader fades out even on error
+                    geminiLoader.addEventListener('transitionend', function geminiErrorLoaderHandler() {
+                        geminiLoader.style.display = 'none';
+                        geminiLoader.removeEventListener('transitionend', geminiErrorLoaderHandler);
+                        handleResponseCompletion(); // Handle completion after loader is hidden
+                    });
                 }
             });
             const learnWhyLink = document.getElementById('learnWhyLink');
