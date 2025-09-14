@@ -42,22 +42,33 @@
             min-height: 0; /* Crucial for flex item in column that contains other flex items */
         }
         .main-content-area {
-            background-image: radial-gradient(circle at center, #261201 2px, transparent 3px); /* Black circles */
+            background-image: radial-gradient(circle at center, #261201 2px, transparent 3px); /* Original dots */
             background-size: 20px 20px; /* Adjust size of the repeating pattern */
             margin-top: 24px; /* Add space between container and main-content-area on mobile */
         }
         /* New CSS for controls-box */
         .controls-box {
-            display: none; /* Hidden by default */
+            display: flex; /* Changed from none to flex to allow transition */
             flex-direction: column; /* Stack children vertically */
             gap: 16px; /* Consistent vertical spacing */
-            padding: 20px; /* Add padding inside the box */
-            border: 2px solid #261201; /* Add border for visibility */
+            padding: 20px; /* Padding for the container itself */
+            box-sizing: border-box; /* Ensure consistent box model */
+            border: 2px solid transparent; /* Set border to transparent when closed */
             border-radius: 8px;
             background-color: #E1E4E1; /* Match background with page */
             margin-top: 16px; /* Add margin to separate from buttons */
-            height: 100%; /* Add height to controls-box */
-            overflow-y: scroll; /* Add overflow-y to controls-box */
+            transition: border-color 0.5s ease-out; /* Only border color transitions on controls-box */
+        }
+        .controls-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out;
+        }
+        .controls-content.open {
+            max-height: 1000px; /* Arbitrary large number to allow content to show */
+        }
+        .controls-box.open {
+            border-color: #261201; /* Apply border color when open */
         }
         /* Mobile specific styles for response-box */
         @media (max-width: 767px) {
@@ -327,7 +338,7 @@
             letter-spacing: 0.03em; /* Added letter-spacing */
         }
         input[type="range"] {
-            width: 100%;
+            width: calc(100% - 2px); /* Adjust width to account for thumb */
             margin-top: 5px;
             accent-color: #3b4b59; /* Updated slider color */
         }
@@ -337,7 +348,6 @@
             align-items: center;
             gap: 10px; /* Add some space between the text and the switch */
             margin-bottom: 5px;
-            font-size: 1.1em;
         }
         .switch {
             position: relative;
@@ -444,7 +454,7 @@
         <div class="container">
             <header style="display: flex; flex-direction: column; gap: 16px;">
                 <h1>ClickyLinks</h1>
-                <p class="slogan">Write actions people want to take. <a href="#" id="learnWhyLink">Learn why</a></p>
+                <p class="slogan">Write actions people want to take. <a href="#" id="learnWhyLink">Learn why.</a></p>
             </header>
             <div class="input-buttons-container">
                 <input type="text" id="mainInput" value="" autofocus>
@@ -452,42 +462,44 @@
                 <button id="addDetailsButton" class="modal-button">Settings</button>
             </div>
             <div class="controls-box" id="controlsBox">
-                <div class="control-group">
-                    <label for="numSuggestions">Number of Suggestions: <span id="numSuggestionsValue">1</span></label>
-                    <input type="range" id="numSuggestions" min="1" max="3" value="1">
-                </div>
-                <div class="control-group">
-                    <label for="playfulProfessional"><span>Playful</span><span>Professional</span></label>
-                    <input type="range" id="playfulProfessional" min="-5" max="5" value="-1">
-                </div>
-                <div class="control-group">
-                    <label for="length"><span>Short & Punchy</span><span>Long & Descriptive</span></label>
-                    <input type="range" id="length" min="-5" max="5" value="-5">
-                </div>
-                <div class="control-group">
-                    <div class="switch-container">
-                        <label for="includeExplanation">Include explanations</label>
-                        <label class="switch">
-                            <input type="checkbox" id="includeExplanation" checked>
-                            <span class="slider"></span>
-                        </label>
+                <div class="controls-content">
+                    <div class="control-group">
+                        <label for="numSuggestions">Number of Suggestions <span id="numSuggestionsValue">1</span></label>
+                        <input type="range" id="numSuggestions" min="1" max="3" value="1">
                     </div>
-                </div>
-                <div class="control-group">
-                    <label for="whatCompanyDoes">What the company does:</label>
-                    <input type="text" id="whatCompanyDoes" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-                </div>
-                <div class="control-group">
-                    <label for="targetAudience">Target audience</label>
-                    <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-                </div>
-                <div class="control-group">
-                    <label for="banWords">Ban words (comma-separated):</label>
-                    <input type="text" id="banWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-                </div>
-                <div class="control-group">
-                    <label for="keepWords">Keep words (comma-separated):</label>
-                    <input type="text" id="keepWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                    <div class="control-group">
+                        <label for="playfulProfessional"><span>Playful</span><span>Professional</span></label>
+                        <input type="range" id="playfulProfessional" min="-5" max="5" value="-1">
+                    </div>
+                    <div class="control-group">
+                        <label for="length"><span>Short & Punchy</span><span>Long & Descriptive</span></label>
+                        <input type="range" id="length" min="-5" max="5" value="-5">
+                    </div>
+                    <div class="control-group">
+                        <div class="switch-container">
+                            <label for="includeExplanation">Include explanations</label>
+                            <label class="switch">
+                                <input type="checkbox" id="includeExplanation" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label for="whatCompanyDoes">What the company does</label>
+                        <input type="text" id="whatCompanyDoes" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                    </div>
+                    <div class="control-group">
+                        <label for="targetAudience">Target audience</label>
+                        <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                    </div>
+                    <div class="control-group">
+                        <label for="banWords">Ban words (comma-separated)</label>
+                        <input type="text" id="banWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                    </div>
+                    <div class="control-group">
+                        <label for="keepWords">Keep words (comma-separated)</label>
+                        <input type="text" id="keepWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                    </div>
                 </div>
             </div>
         </div>
@@ -628,6 +640,7 @@
             // const detailModal = document.getElementById('detailModal'); // Removed as modal is removed
             // const closeButton = detailModal.querySelector('.close-button'); // Removed as modal is removed
             const controlsBox = document.getElementById('controlsBox'); // Get the new controls box
+            const controlsContent = controlsBox.querySelector('.controls-content'); // Get the new controls content div
             // const applyDetailsButton = document.getElementById('applyDetailsButton'); // Removed as it's no longer used
 
             const numSuggestionsSlider = document.getElementById('numSuggestions');
@@ -649,11 +662,8 @@
 
             // Open/close the controls box
             addDetailsButton.addEventListener('click', () => {
-                if (controlsBox.style.display === 'flex') {
-                    controlsBox.style.display = 'none';
-                } else {
-                    controlsBox.style.display = 'flex';
-                }
+                controlsContent.classList.toggle('open');
+                controlsBox.classList.toggle('open'); // Toggle open class on controlsBox for border color transition
             });
 
             // Removed modal close listeners as detailModal is removed

@@ -40,7 +40,7 @@ app.post('/chat', async (req, res) => {
     }
 
     try {
-        let baseSystemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
+        let baseSystemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' or 'tap here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
         
         let systemContent = baseSystemContent;
 
@@ -127,7 +127,7 @@ app.post('/claude-chat', async (req, res) => {
     }
 
     try {
-        let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
+        let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' or 'tap here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
         
         // Remove aggressive keepWords prepending
         // if (keepWords) {
@@ -227,7 +227,7 @@ app.post('/gemini-chat', async (req, res) => {
     }
 
     try {
-        let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
+        let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text, removing phrases like 'click here' or 'tap here' and replacing them with a more engaging call to action. For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
         
         // Remove aggressive keepWords prepending
         // if (keepWords) {
