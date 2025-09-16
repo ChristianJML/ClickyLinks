@@ -355,9 +355,13 @@
         .control-group label {
             display: flex;
             justify-content: space-between;
+            text-align: left; /* Ensure text is aligned to the left */
             align-items: center;
             margin-bottom: 5px;
             font-size: 1.1em;
+        }
+        .control-group label span:last-child {
+            text-align: right; /* Ensure the last span is text-aligned right */
         }
         .control-group h4 {
             margin-bottom: 10px;
