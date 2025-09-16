@@ -109,6 +109,21 @@
                 margin-top: 0; /* Remove top margin on mobile */
             }
         }
+
+        /* Mobile styles for smaller screens */
+        @media (max-width: 459px) {
+            .input-buttons-container {
+                flex-direction: column; /* Stack input and buttons vertically */
+            }
+            .input-buttons-container button {
+                width: 100%; /* Make buttons take full width when stacked */
+            }
+            #mainInput {
+                width: 100%; /* Ensure input matches button width on mobile */
+                box-sizing: border-box; /* Include padding and border in the width calculation */
+            }
+        }
+
         @media (min-width: 768px) {
             .responsive-wrapper {
                 flex-direction: row; /* Arrange items horizontally */
