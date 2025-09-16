@@ -78,17 +78,17 @@
             display: flex; /* Changed from none to flex to allow transition */
             flex-direction: column; /* Stack children vertically */
             gap: 16px; /* Consistent vertical spacing */
-            padding: 20px; /* Padding for the container itself */
+            padding: 0 20px; /* Padding for the container itself (0 top/bottom when closed) */
             box-sizing: border-box; /* Ensure consistent box model */
             border: 2px solid transparent; /* Set border to transparent when closed */
             border-radius: 8px;
             background-color: #E1E4E1; /* Match background with page */
             margin-top: 16px; /* Add margin to separate from buttons */
-            transition: border-color 0.5s ease-out; /* Only border color transitions on controls-box */
+            transition: border-color 0.5s ease-out, padding 0.5s ease-out; /* Add padding to transition for smoother animation */
         }
         .controls-content {
             max-height: 0;
-            padding: 0 20px; /* Increased horizontal padding to prevent slider cutoff */
+            padding: 0 2px; /* Updated horizontal padding */
             overflow: hidden;
             transition: max-height 0.5s ease-out;
         }
@@ -97,11 +97,16 @@
         }
         .controls-box.open {
             border-color: #261201; /* Apply border color when open */
+            padding: 20px; /* Ensure top/bottom padding when open */
         }
         /* Mobile specific styles for response-box */
         @media (max-width: 767px) {
             .response-box {
                 margin: 4%; /* 4% margin for mobile breakpoints */
+            }
+            .main-content-area {
+                min-height: 800px; /* Minimum height for mobile breakpoint */
+                margin-top: 0; /* Remove top margin on mobile */
             }
         }
         @media (min-width: 768px) {
