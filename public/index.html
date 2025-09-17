@@ -9,11 +9,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+    <!--
+ _   _ _____ _     _     ___  
+| | | | ____| |   | |   / _ \ 
+| |_| |  _| | |   | |  | | | |
+|  _  | |___| |___| |__| |_| |
+|_| |_|_____|_____|_____\___/ 
+Made by Christian
+https://www.linkedin.com/in/christianlawrence27/
+-->
     <style>
         html, body {
             height: 100%; /* Ensure html and body take full viewport height */
             margin: 0; /* Reset default margins */
             padding: 0; /* Reset default padding */
+        }
+        #mobileLearnWhyBreak {
+            display: none; /* Hidden by default for non-mobile */
         }
         body {
             font-family: Arial, sans-serif;
@@ -107,6 +119,12 @@
             .main-content-area {
                 min-height: 800px; /* Minimum height for mobile breakpoint */
                 margin-top: 0; /* Remove top margin on mobile */
+            }
+            #mobileLearnWhyBreak {
+                display: block; /* Show the break on mobile */
+            }
+            #learnWhyLink {
+                display: block; /* Force 'Learn why.' to a new line on mobile */
             }
         }
 
@@ -326,7 +344,7 @@
             max-width: 500px;
             max-height: 100%; /* Fill 100% of the available height within the padded parent */
             overflow-y: auto;
-            margin: auto; /* Auto margin for horizontal centering within the padded modal */
+            margin: auto 1%; /* Centered vertically, 1% horizontal margin */
             box-sizing: border-box; /* Include padding and border in the element's total width and height */
         }
         #ctaEssayModal .modal-content {
@@ -334,7 +352,7 @@
             max-height: 90%; /* Updated max-height for CTA essay modal to 90% */
             background-color: #E1E4E1; /* Updated background color */
             border: 2px solid #261201; /* Added border */
-            margin: auto; /* Centered within the padded modal */
+            margin: auto 1%; /* Centered within the padded modal with 1% horizontal margin */
             box-sizing: border-box; /* Ensure consistent box model */
         }
         #detailModal .modal-content { /* Specific styles for Add Extra Detail modal content */
@@ -488,6 +506,13 @@
             color: #36679b; /* Updated all link color */
             text-decoration: underline;
         }
+        #clickyLinksTitleLink {
+            color: #261201; /* Set default color for the ClickyLinks title link */
+            text-decoration: none; /* Remove underline */
+        }
+        #clickyLinksTitleLink:hover {
+            color: #36679b; /* Set hover color for the ClickyLinks title link */
+        }
         /* Added for the 'Add extra detail' modal close button */
         .detail-close-button {
             color: #261201; /* Updated close button color */
@@ -507,7 +532,7 @@
     <div class="responsive-wrapper">
         <div class="container">
             <header style="display: flex; flex-direction: column; gap: 16px;">
-                <h1>ClickyLinks</h1>
+                <h1><a href="https://www.linkedin.com/in/christianlawrence27/" id="clickyLinksTitleLink" target="_blank" rel="noopener noreferrer">ClickyLinks</a></h1>
                 <p class="slogan">Write actions people want to take. <a href="#" id="learnWhyLink">Learn why.</a></p>
             </header>
             <div class="input-buttons-container">
@@ -743,6 +768,21 @@
             });
 
             document.getElementById('submitButton').addEventListener('click', async () => {
+                // Close controls-box on mobile if open
+                if (window.innerWidth < 768) {
+                    const controlsBox = document.getElementById('controlsBox');
+                    const controlsContent = controlsBox.querySelector('.controls-content');
+                    const toggleArrow = controlsBox.querySelector('.toggle-arrow');
+
+                    if (controlsBox.classList.contains('open')) {
+                        controlsBox.classList.remove('open');
+                        controlsContent.classList.remove('open');
+                        if (toggleArrow) {
+                            toggleArrow.style.transform = 'rotate(0deg)';
+                        }
+                    }
+                }
+
                 const textInput = document.getElementById('mainInput').value; // Changed from textInput
                 const chatGPTPrimaryContent = document.getElementById('chatGPTPrimaryContent');
                 const chatGPTExplanationText = document.getElementById('chatGPTExplanationText');
