@@ -76,9 +76,12 @@ app.post('/chat', async (req, res) => {
         if (banWords) {
             systemContent += ` Absolutely do not include any of the following words in your suggestions: ${banWords}.`;
         }
+        if (keepWords) {
+            systemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
+        }
 
         const completion = await openai.chat.completions.create({
-            model: "gpt-4", // Updated to gpt-4 for better instruction adherence
+            model: "gpt-5-mini", // Updated to gpt-5-mini
             messages: [
                 { role: "system", content: systemContent },
                 { role: "user", content: userMessage }
