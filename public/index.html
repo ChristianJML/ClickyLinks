@@ -312,7 +312,7 @@ https://www.linkedin.com/in/christianlawrence27/
         }
         /* Modal Styles */
         .modal {
-            display: none; /* Hidden by default, JavaScript will set to flex when opened */
+            display: flex; /* Changed to flex to allow centering with visibility/opacity */
             align-items: center; /* Center content vertically */
             justify-content: center; /* Center content horizontally */
             position: fixed; /* Stay in place */
@@ -324,6 +324,13 @@ https://www.linkedin.com/in/christianlawrence27/
             overflow: auto; /* Re-added overflow: auto; to allow scrolling of the entire modal */
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
             padding-top: 0; /* Updated padding-top to 0 */
+            opacity: 0; /* Start with hidden opacity */
+            visibility: hidden; /* Start with hidden visibility */
+            transition: opacity 0.25s ease-in-out, visibility 0.25s ease-in-out;
+        }
+        .modal.open {
+            opacity: 1; /* Fade in */
+            visibility: visible; /* Make visible */
         }
         #extraDetailsSection {
             display: none; /* Hidden by default for mobile */
@@ -500,11 +507,14 @@ https://www.linkedin.com/in/christianlawrence27/
             text-decoration: underline;
         }
         .response-box li a:hover {
-            color: #0056b3; /* Keep a hover color, could also update to a shade of #36679b if desired */
+            color: #2a537f; /* Updated hover color for all links, including learn why */
         }
         a {
             color: #36679b; /* Updated all link color */
             text-decoration: underline;
+        }
+        #learnWhyLink:hover {
+            color: #2a537f; /* Set hover color for the 'Learn why.' link */
         }
         #clickyLinksTitleLink {
             color: #261201; /* Set default color for the ClickyLinks title link */
@@ -530,31 +540,31 @@ https://www.linkedin.com/in/christianlawrence27/
 </head>
 <body>
     <div class="responsive-wrapper">
-        <div class="container">
+    <div class="container">
             <header style="display: flex; flex-direction: column; gap: 16px;">
                 <h1><a href="https://www.linkedin.com/in/christianlawrence27/" id="clickyLinksTitleLink" target="_blank" rel="noopener noreferrer">ClickyLinks</a></h1>
-                <p class="slogan">Write actions people want to take. <a href="#" id="learnWhyLink">Learn why.</a></p>
+                <p class="slogan">Write actions people take. <a href="#" id="learnWhyLink">Learn what words work.</a></p>
             </header>
             <div class="input-buttons-container">
                 <input type="text" id="mainInput" value="" autofocus>
                 <button id="submitButton">Fix my link</button>
                 <button id="addDetailsButton" class="modal-button">Settings</button>
-            </div>
+        </div>
             <div class="controls-box" id="controlsBox">
                 <div class="controls-content">
                     <div class="control-group">
                         <label for="numSuggestions">Number of Suggestions <span id="numSuggestionsValue">1</span></label>
                         <input type="range" id="numSuggestions" min="1" max="3" value="1">
-                    </div>
+        </div>
                     <div class="control-group">
                         <label for="playfulProfessional"><span>Playful</span><span>Professional</span></label>
                         <input type="range" id="playfulProfessional" min="-5" max="5" value="-1">
-                    </div>
-                    <div class="control-group">
+    </div>
+            <div class="control-group">
                         <label for="length"><span>Short & Punchy</span><span>Long & Descriptive</span></label>
                         <input type="range" id="length" min="-5" max="5" value="-5">
-                    </div>
-                    <div class="control-group">
+            </div>
+            <div class="control-group">
                         <div class="switch-container">
                             <label for="includeExplanation">Include explanations</label>
                             <label class="switch">
@@ -562,22 +572,22 @@ https://www.linkedin.com/in/christianlawrence27/
                                 <span class="slider"></span>
                             </label>
                         </div>
-                    </div>
-                    <div class="control-group">
+            </div>
+            <div class="control-group">
                         <label for="whatCompanyDoes">What the company does</label>
                         <input type="text" id="whatCompanyDoes" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-                    </div>
-                    <div class="control-group">
+            </div>
+            <div class="control-group">
                         <label for="targetAudience">Target audience</label>
-                        <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
-                    </div>
-                    <div class="control-group">
+                <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+            </div>
+            <div class="control-group">
                         <label for="banWords">Ban words (comma-separated)</label>
-                        <input type="text" id="banWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                <input type="text" id="banWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
                     </div>
                     <div class="control-group">
                         <label for="keepWords">Keep words (comma-separated)</label>
-                        <input type="text" id="keepWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                <input type="text" id="keepWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
                     </div>
                 </div>
             </div>
@@ -636,7 +646,7 @@ https://www.linkedin.com/in/christianlawrence27/
                     Effective CTAs communicate the action <strong>and</strong> the value: “Add to cart,” “Start free trial,”
                     “Download the report.” Generic commands like “click here” don’t tell users what happens next or why it matters,
                     which reduces motivation. See Nielsen Norman Group on meaningful link labels:
-                    <a href="https://www.nngroup.com/articles/better-link-labels/" rel="noopener">Better Link Labels</a>.
+                    <a href="https://www.nngroup.com/articles/better-link-labels/" rel="noopener noreferrer" target="_blank">Better Link Labels</a>.
                     </p>
                 </section>
 
@@ -646,12 +656,12 @@ https://www.linkedin.com/in/christianlawrence27/
                     Screen-reader and keyboard users often navigate by reading a list of links out of context. Repeated “click here”
                     provides no clue about destination or purpose. Accessibility standards require (and guidance strongly recommends)
                     descriptive link text:
-                    <a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context.html" rel="noopener">WCAG 2.4.4</a>,
-                    <a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-link-only.html" rel="noopener">WCAG 2.4.9</a>,
-                    <a href="https://www.section508.gov/blog/accessibility-bytes/descriptive-links-and-hypertext/" rel="noopener">Section 508 blog</a>,
-                    <a href="https://www.section508.gov/develop/guide-accessible-web-design-development/" rel="noopener">Section 508 guide</a>,
+                    <a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context.html" rel="noopener noreferrer" target="_blank">WCAG 2.4.4</a>,
+                    <a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-link-only.html" rel="noopener noreferrer" target="_blank">WCAG 2.4.9</a>,
+                    <a href="https://www.section508.gov/blog/accessibility-bytes/descriptive-links-and-hypertext/" rel="noopener noreferrer" target="_blank">Section 508 blog</a>,
+                    <a href="https://www.section508.gov/develop/guide-accessible-web-design-development/" rel="noopener noreferrer" target="_blank">Section 508 guide</a>,
                     and
-                    <a href="https://www.gov.uk/guidance/content-design/links" rel="noopener">GOV.UK Content Design</a>.
+                    <a href="https://www.gov.uk/guidance/content-design/links" rel="noopener noreferrer" target="_blank">GOV.UK Content Design</a>.
                     </p>
                 </section>
 
@@ -660,9 +670,9 @@ https://www.linkedin.com/in/christianlawrence27/
                     <p>
                     Search engines use anchor text to understand a page’s topic. Google lists “Click here” and “Read more”
                     as <em>bad (too generic)</em> examples and recommends concise, descriptive anchors:
-                    <a href="https://developers.google.com/search/docs/crawling-indexing/links-crawlable" rel="noopener">Google Search Central: Write good anchor text</a>.
+                    <a href="https://developers.google.com/search/docs/crawling-indexing/links-crawlable" rel="noopener noreferrer" target="_blank">Google Search Central: Write good anchor text</a>.
                     SEO guidance concurs: avoid generic anchors and tell users what the link is about
-                    (<a href="https://yoast.com/what-is-anchor-text/" rel="noopener">Yoast</a>).
+                    (<a href="https://yoast.com/what-is-anchor-text/" rel="noopener noreferrer" target="_blank">Yoast</a>).
                     </p>
                 </section>
 
@@ -671,9 +681,9 @@ https://www.linkedin.com/in/christianlawrence27/
                     <p>
                     Labels need “information scent”—a clear cue about the outcome. “Click here” forces readers to hunt for context,
                     slowing scanning and eroding trust. See
-                    <a href="https://www.nngroup.com/articles/learn-more-links/" rel="noopener">NN/g: “Learn more” is the new “Click here”</a>
+                    <a href="https://www.nngroup.com/articles/learn-more-links/" rel="noopener noreferrer" target="_blank">NN/g: “Learn more” is the new “Click here”</a>
                     and
-                    <a href="https://www.nngroup.com/articles/better-link-labels/" rel="noopener">NN/g: Better Link Labels</a>.
+                    <a href="https://www.nngroup.com/articles/better-link-labels/" rel="noopener noreferrer" target="_blank">NN/g: Better Link Labels</a>.
                     </p>
                 </section>
 
@@ -691,15 +701,15 @@ https://www.linkedin.com/in/christianlawrence27/
                 <footer>
                     <h3>Key Sources</h3>
                     <ul>
-                    <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context.html" rel="noopener">WCAG 2.4.4</a></li>
-                    <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-link-only.html" rel="noopener">WCAG 2.4.9</a></li>
-                    <li><a href="https://www.section508.gov/blog/accessibility-bytes/descriptive-links-and-hypertext/" rel="noopener">Section 508: Descriptive links</a></li>
-                    <li><a href="https://www.section508.gov/develop/guide-accessible-web-design-development/" rel="noopener">Section 508: Accessible design guide</a></li>
-                    <li><a href="https://developers.google.com/search/docs/crawling-indexing/links-crawlable" rel="noopener">Google Search Central: Anchor text</a></li>
-                    <li><a href="https://www.nngroup.com/articles/learn-more-links/" rel="noopener">NN/g: Learn More links</a></li>
-                    <li><a href="https://www.nngroup.com/articles/better-link-labels/" rel="noopener">NN/g: Better link labels</a></li>
-                    <li><a href="https://www.gov.uk/guidance/content-design/links" rel="noopener">GOV.UK Content Design: Links</a></li>
-                    <li><a href="https://yoast.com/what-is-anchor-text/" rel="noopener">Yoast: Anchor text</a></li>
+                    <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-in-context.html" rel="noopener noreferrer" target="_blank">WCAG 2.4.4</a></li>
+                    <li><a href="https://www.w3.org/WAI/WCAG21/Understanding/link-purpose-link-only.html" rel="noopener noreferrer" target="_blank">WCAG 2.4.9</a></li>
+                    <li><a href="https://www.section508.gov/blog/accessibility-bytes/descriptive-links-and-hypertext/" rel="noopener noreferrer" target="_blank">Section 508: Descriptive links</a></li>
+                    <li><a href="https://www.section508.gov/develop/guide-accessible-web-design-development/" rel="noopener noreferrer" target="_blank">Section 508: Accessible design guide</a></li>
+                    <li><a href="https://developers.google.com/search/docs/crawling-indexing/links-crawlable" rel="noopener noreferrer" target="_blank">Google Search Central: Anchor text</a></li>
+                    <li><a href="https://www.nngroup.com/articles/learn-more-links/" rel="noopener noreferrer" target="_blank">NN/g: Learn More links</a></li>
+                    <li><a href="https://www.nngroup.com/articles/better-link-labels/" rel="noopener noreferrer" target="_blank">NN/g: Better link labels</a></li>
+                    <li><a href="https://www.gov.uk/guidance/content-design/links" rel="noopener noreferrer" target="_blank">GOV.UK Content Design: Links</a></li>
+                    <li><a href="https://yoast.com/what-is-anchor-text/" rel="noopener noreferrer" target="_blank">Yoast: Anchor text</a></li>
                     </ul>
                 </footer>
             </article>
@@ -708,8 +718,8 @@ https://www.linkedin.com/in/christianlawrence27/
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const textInput = document.getElementById('mainInput'); // Changed from textInput
-            const submitButton = document.getElementById('submitButton');
-            const addDetailsButton = document.getElementById('addDetailsButton');
+        const submitButton = document.getElementById('submitButton');
+        const addDetailsButton = document.getElementById('addDetailsButton');
             const chatGPTPrimaryContent = document.getElementById('chatGPTPrimaryContent');
             const chatGPTExplanationText = document.getElementById('chatGPTExplanationText');
             const claudePrimaryContent = document.getElementById('claudePrimaryContent');
@@ -723,25 +733,25 @@ https://www.linkedin.com/in/christianlawrence27/
             // const applyDetailsButton = document.getElementById('applyDetailsButton'); // Removed as it's no longer used
             const mainContentArea = document.querySelector('.main-content-area'); // Get the main content area
 
-            const numSuggestionsSlider = document.getElementById('numSuggestions');
-            const numSuggestionsValue = document.getElementById('numSuggestionsValue');
-            const playfulProfessionalSlider = document.getElementById('playfulProfessional');
+        const numSuggestionsSlider = document.getElementById('numSuggestions');
+        const numSuggestionsValue = document.getElementById('numSuggestionsValue');
+        const playfulProfessionalSlider = document.getElementById('playfulProfessional');
             
-            const lengthSlider = document.getElementById('length');
+        const lengthSlider = document.getElementById('length');
             const includeExplanationCheckbox = document.getElementById('includeExplanation');
 
-            
-            const whatCompanyDoesTextarea = document.getElementById('whatCompanyDoes');
-            const targetAudienceInput = document.getElementById('targetAudience');
 
-            const banWordsInput = document.getElementById('banWords');
-            const keepWordsInput = document.getElementById('keepWords');
+        const whatCompanyDoesTextarea = document.getElementById('whatCompanyDoes');
+        const targetAudienceInput = document.getElementById('targetAudience');
 
-            // Update slider value displays
-            numSuggestionsSlider.oninput = () => { numSuggestionsValue.textContent = numSuggestionsSlider.value; };
+        const banWordsInput = document.getElementById('banWords');
+        const keepWordsInput = document.getElementById('keepWords');
+
+        // Update slider value displays
+        numSuggestionsSlider.oninput = () => { numSuggestionsValue.textContent = numSuggestionsSlider.value; };
 
             // Open/close the controls box
-            addDetailsButton.addEventListener('click', () => {
+        addDetailsButton.addEventListener('click', () => {
                 controlsContent.classList.toggle('open');
                 controlsBox.classList.toggle('open'); // Toggle open class on controlsBox for border color transition
             });
@@ -762,12 +772,12 @@ https://www.linkedin.com/in/christianlawrence27/
             // });
 
             document.getElementById('mainInput').addEventListener('keydown', (event) => {
-                if (event.key === 'Enter') {
-                    document.getElementById('submitButton').click();
-                }
-            });
+            if (event.key === 'Enter') {
+                document.getElementById('submitButton').click();
+            }
+        });
 
-            document.getElementById('submitButton').addEventListener('click', async () => {
+        document.getElementById('submitButton').addEventListener('click', async () => {
                 // Close controls-box on mobile if open
                 if (window.innerWidth < 768) {
                     const controlsBox = document.getElementById('controlsBox');
@@ -871,32 +881,32 @@ https://www.linkedin.com/in/christianlawrence27/
                 // Reset responsesCompleted at the start of each submission
                 responsesCompleted = 0; // Reset counter for new submission
 
-                const requestBody = {
-                    message: textInput,
-                    numSuggestions: numSuggestionsSlider.value,
-                    playfulProfessional: playfulProfessionalSlider.value,
-                    length: lengthSlider.value,
+            const requestBody = {
+                message: textInput,
+                numSuggestions: numSuggestionsSlider.value,
+                playfulProfessional: playfulProfessionalSlider.value,
+                length: lengthSlider.value,
                     includeExplanation: includeExplanationCheckbox.checked,
                     
-                    whatCompanyDoes: whatCompanyDoesTextarea.value,
-                    targetAudience: targetAudienceInput.value,
-                    banWords: banWordsInput.value,
-                    keepWords: keepWordsInput.value,
-                };
+                whatCompanyDoes: whatCompanyDoesTextarea.value,
+                targetAudience: targetAudienceInput.value,
+                banWords: banWordsInput.value,
+                keepWords: keepWordsInput.value,
+            };
 
-                try {
-                    // Fetch from ChatGPT API
-                    const chatGPTResponse = await fetch('/chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(requestBody)
-                    });
+            try {
+                // Fetch from ChatGPT API
+                const chatGPTResponse = await fetch('/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
 
-                    const chatGPTData = await chatGPTResponse.json();
+                const chatGPTData = await chatGPTResponse.json();
 
-                    if (chatGPTResponse.ok) {
+                if (chatGPTResponse.ok) {
                         chatGPTPrimaryContent.innerHTML = ''; // Clear previous responses
                         // Hide loader and show result
                         const chatGPTLoader = document.getElementById('chatGPTResponseBox').querySelector('.top-area .loader');
@@ -906,14 +916,14 @@ https://www.linkedin.com/in/christianlawrence27/
                             chatGPTLoader.removeEventListener('transitionend', handler);
                         });
                         
-                        if (chatGPTData.response && Array.isArray(chatGPTData.response)) {
-                            const ul = document.createElement('ul');
+                    if (chatGPTData.response && Array.isArray(chatGPTData.response)) {
+                        const ul = document.createElement('ul');
                             ul.classList.add('new-cta-list'); // Add class to ul
-                            chatGPTData.response.forEach(suggestion => {
-                                const li = document.createElement('li');
-                                li.innerHTML = suggestion;
-                                ul.appendChild(li);
-                            });
+                        chatGPTData.response.forEach(suggestion => {
+                            const li = document.createElement('li');
+                            li.innerHTML = suggestion;
+                            ul.appendChild(li);
+                        });
                             chatGPTPrimaryContent.appendChild(ul);
                         } else {
                             const p = document.createElement('p');
@@ -946,21 +956,21 @@ https://www.linkedin.com/in/christianlawrence27/
                         chatGPTLoader.removeEventListener('transitionend', chatGPTErrorLoaderHandler);
                         handleResponseCompletion(); // Handle completion after loader is hidden
                     });
-                }
+            }
 
-                try {
-                    // Fetch from Claude API
-                    const claudeResponse = await fetch('/claude-chat', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(requestBody)
-                    });
+            try {
+                // Fetch from Claude API
+                const claudeResponse = await fetch('/claude-chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(requestBody)
+                });
 
-                    const claudeData = await claudeResponse.json();
+                const claudeData = await claudeResponse.json();
 
-                    if (claudeResponse.ok) {
+                if (claudeResponse.ok) {
                         claudePrimaryContent.innerHTML = ''; // Clear previous responses
                         // Hide loader and show result
                         const claudeLoader = document.getElementById('claudeResponseBox').querySelector('.top-area .loader');
@@ -970,14 +980,14 @@ https://www.linkedin.com/in/christianlawrence27/
                             claudeLoader.removeEventListener('transitionend', handler);
                         });
                         
-                        if (claudeData.response && Array.isArray(claudeData.response)) {
-                            const ul = document.createElement('ul');
+                    if (claudeData.response && Array.isArray(claudeData.response)) {
+                        const ul = document.createElement('ul');
                             ul.classList.add('new-cta-list'); // Add class to ul
-                            claudeData.response.forEach(suggestion => {
-                                const li = document.createElement('li');
-                                li.innerHTML = suggestion;
-                                ul.appendChild(li);
-                            });
+                        claudeData.response.forEach(suggestion => {
+                            const li = document.createElement('li');
+                            li.innerHTML = suggestion;
+                            ul.appendChild(li);
+                        });
                             claudePrimaryContent.appendChild(ul);
                         } else {
                             const p = document.createElement('p');
@@ -1057,7 +1067,7 @@ https://www.linkedin.com/in/christianlawrence27/
                             document.getElementById('geminiResponseBox').querySelector('.result').style.opacity = '1';
                             document.getElementById('geminiResponseBox').querySelector('.result').style.visibility = 'visible';
                         }, 500); // Increased delay to allow box expansion to complete
-                    } else {
+                } else {
                         geminiPrimaryContent.innerHTML = 'Error: ' + (geminiData.error || 'Something went wrong with Gemini. Please check the server console for details.');
                     }
                 } catch (error) {
@@ -1075,7 +1085,7 @@ https://www.linkedin.com/in/christianlawrence27/
             if (learnWhyLink) {
                 learnWhyLink.addEventListener('click', (event) => {
                     event.preventDefault(); // Prevent default link behavior
-                    document.getElementById('ctaEssayModal').style.display = 'flex'; // Use flex to center the modal
+                    document.getElementById('ctaEssayModal').classList.add('open'); // Use class to open modal
                 });
             }
 
@@ -1084,14 +1094,14 @@ https://www.linkedin.com/in/christianlawrence27/
             if (ctaEssayCloseButton) {
                 ctaEssayCloseButton.addEventListener('click', (event) => {
                     event.stopPropagation(); // Prevent click from bubbling up to window
-                    ctaEssayModal.style.display = 'none';
+                    ctaEssayModal.classList.remove('open'); // Use class to close modal
                 });
             }
 
             // Close the modal if clicked outside
             window.addEventListener('click', (event) => {
                 if (event.target == ctaEssayModal) {
-                    ctaEssayModal.style.display = 'none';
+                    ctaEssayModal.classList.remove('open'); // Use class to close modal
                 }
             });
         }); // End DOMContentLoaded
