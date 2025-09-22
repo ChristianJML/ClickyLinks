@@ -93,7 +93,7 @@ https://www.linkedin.com/in/christianlawrence27/
             padding: 0 20px; /* Padding for the container itself (0 top/bottom when closed) */
             box-sizing: border-box; /* Ensure consistent box model */
             border: 2px solid transparent; /* Set border to transparent when closed */
-            border-radius: 8px;
+            border-radius: 5px;
             background-color: #E1E4E1; /* Match background with page */
             margin-top: 16px; /* Add margin to separate from buttons */
             transition: border-color 0.5s ease-out, padding 0.5s ease-out; /* Add padding to transition for smoother animation */
@@ -539,6 +539,15 @@ https://www.linkedin.com/in/christianlawrence27/
     </style>
 </head>
 <body>
+    <div id="errorToast" style="position: fixed; top: 20px; left: 20px; background-color: #f0f0f0; color: #261201; padding: 15px 20px; border-radius: 5px; z-index: 1000; opacity: 0; transition: opacity 0.5s ease-in-out; box-shadow: 0 4px 12px rgba(0,0,0,0.15); min-width: 280px; max-width: 90%; display: flex; align-items: center; border: 1px solid #e0e0e0; box-sizing: border-box;">
+        <div style="width: 6px; height: 100%; background-color: #AF2E1B; border-radius: 5px 0 0 5px; position: absolute; left: 0; top: 0;"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#AF2E1B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 12px; flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        <div style="flex-grow: 1;">
+            <h4 style="margin: 0; font-size: 1.1em; font-weight: 600; color: #261201;">Error</h4>
+            <p style="margin: 0; font-size: 0.9em; color: #555;">Error has occurred while saving changes.</p>
+        </div>
+        <span id="errorToastClose" style="cursor: pointer; font-size: 1.4em; color: #888; margin-left: 20px; flex-shrink: 0; line-height: 1;">&times;</span>
+    </div>
     <div class="responsive-wrapper">
     <div class="container">
             <header style="display: flex; flex-direction: column; gap: 16px;">
@@ -732,6 +741,8 @@ https://www.linkedin.com/in/christianlawrence27/
             const controlsContent = controlsBox.querySelector('.controls-content'); // Get the new controls content div
             // const applyDetailsButton = document.getElementById('applyDetailsButton'); // Removed as it's no longer used
             const mainContentArea = document.querySelector('.main-content-area'); // Get the main content area
+            const errorToast = document.getElementById('errorToast');
+            const errorToastCloseButton = document.getElementById('errorToastClose');
 
         const numSuggestionsSlider = document.getElementById('numSuggestions');
         const numSuggestionsValue = document.getElementById('numSuggestionsValue');
@@ -777,7 +788,7 @@ https://www.linkedin.com/in/christianlawrence27/
             }
         });
 
-        document.getElementById('submitButton').addEventListener('click', async () => {
+            document.getElementById('submitButton').addEventListener('click', async () => {
                 // Close controls-box on mobile if open
                 if (window.innerWidth < 768) {
                     const controlsBox = document.getElementById('controlsBox');
@@ -793,7 +804,30 @@ https://www.linkedin.com/in/christianlawrence27/
                     }
                 }
 
-                const textInput = document.getElementById('mainInput').value; // Changed from textInput
+                const textInput = mainInput.value.trim(); // Use mainInput directly
+
+                if (!textInput) {
+                    const errorMessageElement = errorToast.querySelector('p');
+                    errorMessageElement.textContent = 'Please add some text to be fixed first.';
+                    errorToast.style.display = 'flex';
+                    errorToast.style.opacity = '1';
+                    setTimeout(() => {
+                        errorToast.style.opacity = '0';
+                        errorToast.addEventListener('transitionend', function handler() {
+                            errorToast.style.display = 'none';
+                            errorToast.removeEventListener('transitionend', handler);
+                        });
+                    }, 3000); // Hide after 3 seconds
+                    return; // Stop further execution
+                }
+
+                // If input is valid, ensure toast is hidden and reset
+                errorToast.style.opacity = '0';
+                errorToast.addEventListener('transitionend', function handler() {
+                    errorToast.style.display = 'none';
+                    errorToast.removeEventListener('transitionend', handler);
+                });
+
                 const chatGPTPrimaryContent = document.getElementById('chatGPTPrimaryContent');
                 const chatGPTExplanationText = document.getElementById('chatGPTExplanationText');
                 const claudePrimaryContent = document.getElementById('claudePrimaryContent');
@@ -1103,6 +1137,15 @@ https://www.linkedin.com/in/christianlawrence27/
                 if (event.target == ctaEssayModal) {
                     ctaEssayModal.classList.remove('open'); // Use class to close modal
                 }
+            });
+
+            // Error toast close button listener
+            errorToastCloseButton.addEventListener('click', () => {
+                errorToast.style.opacity = '0';
+                errorToast.addEventListener('transitionend', function handler() {
+                    errorToast.style.display = 'none';
+                    errorToast.removeEventListener('transitionend', handler);
+                });
             });
         }); // End DOMContentLoaded
     </script>
