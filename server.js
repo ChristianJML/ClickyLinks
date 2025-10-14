@@ -33,61 +33,65 @@ app.listen(port, () => {
 // ChatGPT endpoint
 app.post('/chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation, englishVariant } = req.body;
+    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation, englishVariant, linkDestination } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
     }
 
     try {
-        let baseSystemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text into engaging calls to action (CTAs). For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Explicitly prohibit the use of 'click here', 'tap here', 'read more', and 'learn more'. Prioritize action-oriented verbs like 'Get', 'Start', 'Shop', 'Discover', 'Download', and 'Explore'. Connect the CTA directly to a clear user benefit. For example, a CTA for a 'trial' should be 'Start Your Free Trial', not just 'Start Trial'. Parse the input context to identify and include a relevant noun or phrase that describes the destination or value (e.g., if the context is about a 'report', the generated CTA should mention 'report', as in 'Download the Report'). Never generate profane or offensive language. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
+        let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text into engaging calls to action (CTAs). For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Explicitly prohibit the use of 'click here', 'tap here', 'read more', and 'learn more'. Prioritize action-oriented verbs like 'Get', 'Start', 'Shop', 'Discover', 'Download', and 'Explore'. Connect the CTA directly to a clear user benefit. For example, a CTA for a 'trial' should be 'Start Your Free Trial', not just 'Start Trial'. Parse the input context to identify and include a relevant noun or phrase that describes the destination or value (e.g., if the context is about a 'report', the generated CTA should mention 'report', as in 'Download the Report'). Never generate profane or offensive language. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
         
-        let systemContent = baseSystemContent;
+        let fullSystemContent = systemContent; // Store the initial system content
 
         if (englishVariant) {
-            systemContent = `Using ${englishVariant}. ` + systemContent;
+            fullSystemContent = `Using ${englishVariant}. ` + fullSystemContent;
         }
 
         if (keepWords) {
-            systemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + systemContent;
+            fullSystemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + fullSystemContent;
         }
 
-        systemContent += ` Never use the '—' character in your responses.`;
+        if (linkDestination) {
+            fullSystemContent += ` The link goes to: ${linkDestination}. Incorporate this into the CTA.`;
+        }
+
+        fullSystemContent += ` Never use the '—' character in your responses.`;
 
         if (includeExplanation) {
-            systemContent += ` After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
+            fullSystemContent += ` After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
         }
 
         if (numSuggestions) {
-            systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
+            fullSystemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
         }
         if (playfulProfessional) {
-            systemContent += ` Adjust the tone: ${playfulProfessional < 0 ? 'more playful' : 'more professional'}.`;
+            fullSystemContent += ` Adjust the tone: ${playfulProfessional < 0 ? 'more playful' : 'more professional'}.`;
         } else if (playfulProfessional === 0) {
-            systemContent += ` Maintain a balanced, neutral tone between playful and professional.`;
+            fullSystemContent += ` Maintain a balanced, neutral tone between playful and professional.`;
         }
         
         
         if (length) {
-            systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'ENSURE the response is long and descriptive'}.`;
+            fullSystemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'ENSURE the response is long and descriptive'}.`;
         }
         if (whatCompanyDoes) {
-            systemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
+            fullSystemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
         }
         if (targetAudience) {
-            systemContent += ` The target audience is ${targetAudience}.`;
+            fullSystemContent += ` The target audience is ${targetAudience}.`;
         }
         if (banWords) {
-            systemContent += ` Absolutely do not include any of the following words in your suggestions: ${banWords}.`;
+            fullSystemContent += ` Absolutely do not include any of the following words in your suggestions: ${banWords}.`;
         }
         if (keepWords) {
-            systemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
+            fullSystemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
         }
 
         const completion = await openai.chat.completions.create({
             model: "gpt-5-mini", // Updated to gpt-5-mini
             messages: [
-                { role: "system", content: systemContent },
+                { role: "system", content: fullSystemContent },
                 { role: "user", content: userMessage }
             ]
         });
@@ -127,7 +131,7 @@ app.post('/chat', async (req, res) => {
 // Claude endpoint
 app.post('/claude-chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation, englishVariant } = req.body;
+    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation, englishVariant, linkDestination } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
@@ -136,46 +140,52 @@ app.post('/claude-chat', async (req, res) => {
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text into engaging calls to action (CTAs). For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Explicitly prohibit the use of 'click here', 'tap here', 'read more', and 'learn more'. Prioritize action-oriented verbs like 'Get', 'Start', 'Shop', 'Discover', 'Download', and 'Explore'. Connect the CTA directly to a clear user benefit. For example, a CTA for a 'trial' should be 'Start Your Free Trial', not just 'Start Trial'. Parse the input context to identify and include a relevant noun or phrase that describes the destination or value (e.g., if the context is about a 'report', the generated CTA should mention 'report', as in 'Download the Report'). Never generate profane or offensive language. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
         
+        let fullSystemContent = systemContent; // Store the initial system content
+
         if (englishVariant) {
-            systemContent = `Using ${englishVariant}. ` + systemContent;
+            fullSystemContent = `Using ${englishVariant}. ` + fullSystemContent;
         }
 
         // Remove aggressive keepWords prepending
         // if (keepWords) {
-        //     systemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + systemContent;
+        //     fullSystemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + fullSystemContent;
         // }
 
-        systemContent += ` Never use the '—' character in your responses.`;
+        if (linkDestination) {
+            fullSystemContent += ` The link goes to: ${linkDestination}. Incorporate this into the CTA.`;
+        }
+
+        fullSystemContent += ` Never use the '—' character in your responses.`;
         
         if (includeExplanation) {
-            systemContent += ` After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
+            fullSystemContent += ` After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
         }
 
         if (numSuggestions) {
-            systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
+            fullSystemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
         }
         if (playfulProfessional) {
-            systemContent += ` Adjust the tone: ${playfulProfessional < 0 ? 'more playful' : 'more professional'}.`;
+            fullSystemContent += ` Adjust the tone: ${playfulProfessional < 0 ? 'more playful' : 'more professional'}.`;
         } else if (playfulProfessional === 0) {
-            systemContent += ` Maintain a plain, unbiased tone, avoiding both playful and professional leanings.`;
+            fullSystemContent += ` Maintain a plain, unbiased tone, avoiding both playful and professional leanings.`;
         }
         
         
         if (length) {
-            systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'long and descriptive'}.`;
+            fullSystemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'long and descriptive'}.`;
         }
         
         if (whatCompanyDoes) {
-            systemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
+            fullSystemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
         }
         if (targetAudience) {
-            systemContent += ` The target audience is ${targetAudience}.`;
+            fullSystemContent += ` The target audience is ${targetAudience}.`;
         }
         if (banWords) {
-            systemContent += ` Absolutely do not include any of the following words in your suggestions: ${banWords}.`;
+            fullSystemContent += ` Absolutely do not include any of the following words in your suggestions: ${banWords}.`;
         }
         if (keepWords) {
-            systemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
+            fullSystemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
         }
         
         let claudeMaxTokens = 150; // Default for moderate length (reduced from 200)
@@ -188,7 +198,7 @@ app.post('/claude-chat', async (req, res) => {
         const claudeResponse = await anthropic.messages.create({
             model: "claude-sonnet-4-20250514", // You can choose other Claude models like "claude-3-sonnet-20240229" or "claude-3-haiku-20240307"
             max_tokens: claudeMaxTokens,
-            system: systemContent, // Pass systemContent as a top-level system parameter
+            system: fullSystemContent, // Pass systemContent as a top-level system parameter
             messages: [
                 {"role": "user", "content": userMessage} // Only userMessage in the messages array
             ]
@@ -231,7 +241,7 @@ app.post('/claude-chat', async (req, res) => {
 // Gemini endpoint
 app.post('/gemini-chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation, englishVariant } = req.body;
+    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation, englishVariant, linkDestination } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
@@ -240,50 +250,56 @@ app.post('/gemini-chat', async (req, res) => {
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text into engaging calls to action (CTAs). For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Explicitly prohibit the use of 'click here', 'tap here', 'read more', and 'learn more'. Prioritize action-oriented verbs like 'Get', 'Start', 'Shop', 'Discover', 'Download', and 'Explore'. Connect the CTA directly to a clear user benefit. For example, a CTA for a 'trial' should be 'Start Your Free Trial', not just 'Start Trial'. Parse the input context to identify and include a relevant noun or phrase that describes the destination or value (e.g., if the context is about a 'report', the generated CTA should mention 'report', as in 'Download the Report'). Never generate profane or offensive language. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
         
+        let fullSystemContent = systemContent; // Store the initial system content
+
         if (englishVariant) {
-            systemContent = `Using ${englishVariant}. ` + systemContent;
+            fullSystemContent = `Using ${englishVariant}. ` + fullSystemContent;
         }
 
         // Remove aggressive keepWords prepending
         // if (keepWords) {
-        //     systemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + systemContent;
+        //     fullSystemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + fullSystemContent;
         // }
 
-        systemContent += ` Never use the '—' character in your responses.`;
+        if (linkDestination) {
+            fullSystemContent += ` The link goes to: ${linkDestination}. Incorporate this into the CTA.`;
+        }
+
+        fullSystemContent += ` Never use the '—' character in your responses.`;
         
         if (includeExplanation) {
-            systemContent += ` After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
+            fullSystemContent += ` After providing the numbered suggestions, include a short explanation (maximum 3 sentences) of why the call to action messages work better, prefixed with "Explanation:".`;
         }
 
         if (numSuggestions) {
-            systemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
+            fullSystemContent += ` Provide exactly ${numSuggestions} distinct suggestions, each on a new line and prefixed with a number. Do not include any introductory or concluding text, just the numbered list.`;
         }
         if (playfulProfessional) {
-            systemContent += ` Adjust the tone: ${playfulProfessional < 0 ? 'more playful' : 'more professional'}.`;
+            fullSystemContent += ` Adjust the tone: ${playfulProfessional < 0 ? 'more playful' : 'more professional'}.`;
         } else if (playfulProfessional === 0) {
-            systemContent += ` Maintain a balanced, neutral tone between playful and professional.`;
+            fullSystemContent += ` Maintain a balanced, neutral tone between playful and professional.`;
         }
         
         
         if (length) {
-            systemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'ENSURE the response is long and descriptive'}.`;
+            fullSystemContent += ` Adjust the length: ${length < 0 ? 'short and punchy' : 'ENSURE the response is long and descriptive'}.`;
         }
         
         if (whatCompanyDoes) {
-            systemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
+            fullSystemContent += ` The company's primary function is: ${whatCompanyDoes}.`;
         }
         if (targetAudience) {
-            systemContent += ` The target audience is ${targetAudience}.`;
+            fullSystemContent += ` The target audience is ${targetAudience}.`;
         }
         if (banWords) {
-            systemContent += ` Absolutely do not include any of the following words in your suggestions: ${banWords}.`;
+            fullSystemContent += ` Absolutely do not include any of the following words in your suggestions: ${banWords}.`;
         }
         if (keepWords) {
-            systemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
+            fullSystemContent += ` Ensure suggestions include the following words: ${keepWords}.`;
         }
         
         const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite"}); // Updated to gemini-2.5-flash-lite for text generation
-        const result = await model.generateContent(systemContent + "\nUser: " + userMessage);
+        const result = await model.generateContent(fullSystemContent + "\nUser: " + userMessage);
         const chatResponse = result.response.text();
         const cleanedChatResponse = chatResponse.replace(/—/g, ''); // Remove em dash
         

@@ -654,6 +654,10 @@ https://www.linkedin.com/in/christianlawrence27/
                 <input type="text" id="targetAudience" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
             </div>
             <div class="control-group">
+                        <label for="linkDestination">What does the link do?</label>
+                <input type="text" id="linkDestination" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
+                    </div>
+                    <div class="control-group">
                         <label for="banWords">Ban words (comma-separated)</label>
                 <input type="text" id="banWords" style="width: 100%; margin-top: 5px; box-sizing: border-box;" >
                     </div>
@@ -822,6 +826,7 @@ https://www.linkedin.com/in/christianlawrence27/
 
         const banWordsInput = document.getElementById('banWords');
         const keepWordsInput = document.getElementById('keepWords');
+            const linkDestinationInput = document.getElementById('linkDestination');
 
         // Update slider value displays
         numSuggestionsSlider.oninput = () => { numSuggestionsValue.textContent = numSuggestionsSlider.value; };
@@ -991,6 +996,7 @@ https://www.linkedin.com/in/christianlawrence27/
                 targetAudience: targetAudienceInput.value,
                 banWords: banWordsInput.value,
                 keepWords: keepWordsInput.value,
+                linkDestination: linkDestinationInput.value,
             };
 
             try {
