@@ -570,10 +570,6 @@ https://www.linkedin.com/in/christianlawrence27/
                         <input type="range" id="playfulProfessional" min="-5" max="5" value="-1">
     </div>
             <div class="control-group">
-                        <label for="length"><span>Short & Punchy</span><span>Long & Descriptive</span></label>
-                        <input type="range" id="length" min="-5" max="5" value="-5">
-            </div>
-            <div class="control-group">
                         <div class="switch-container">
                             <label for="includeExplanation">Include explanations</label>
                             <label class="switch">
@@ -919,7 +915,7 @@ https://www.linkedin.com/in/christianlawrence27/
                 message: textInput,
                 numSuggestions: numSuggestionsSlider.value,
                 playfulProfessional: playfulProfessionalSlider.value,
-                length: lengthSlider.value,
+                length: -5, // Default to Short & Punchy
                     includeExplanation: includeExplanationCheckbox.checked,
                     
                 whatCompanyDoes: whatCompanyDoesTextarea.value,
