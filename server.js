@@ -33,7 +33,7 @@ app.listen(port, () => {
 // ChatGPT endpoint
 app.post('/chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation } = req.body;
+    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation, englishVariant } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
@@ -43,6 +43,10 @@ app.post('/chat', async (req, res) => {
         let baseSystemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text into engaging calls to action (CTAs). For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Explicitly prohibit the use of 'click here', 'tap here', 'read more', and 'learn more'. Prioritize action-oriented verbs like 'Get', 'Start', 'Shop', 'Discover', 'Download', and 'Explore'. Connect the CTA directly to a clear user benefit. For example, a CTA for a 'trial' should be 'Start Your Free Trial', not just 'Start Trial'. Parse the input context to identify and include a relevant noun or phrase that describes the destination or value (e.g., if the context is about a 'report', the generated CTA should mention 'report', as in 'Download the Report'). Never generate profane or offensive language. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
         
         let systemContent = baseSystemContent;
+
+        if (englishVariant) {
+            systemContent = `Using ${englishVariant}. ` + systemContent;
+        }
 
         if (keepWords) {
             systemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + systemContent;
@@ -123,7 +127,7 @@ app.post('/chat', async (req, res) => {
 // Claude endpoint
 app.post('/claude-chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation } = req.body;
+    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation, englishVariant } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
@@ -132,6 +136,10 @@ app.post('/claude-chat', async (req, res) => {
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text into engaging calls to action (CTAs). For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Explicitly prohibit the use of 'click here', 'tap here', 'read more', and 'learn more'. Prioritize action-oriented verbs like 'Get', 'Start', 'Shop', 'Discover', 'Download', and 'Explore'. Connect the CTA directly to a clear user benefit. For example, a CTA for a 'trial' should be 'Start Your Free Trial', not just 'Start Trial'. Parse the input context to identify and include a relevant noun or phrase that describes the destination or value (e.g., if the context is about a 'report', the generated CTA should mention 'report', as in 'Download the Report'). Never generate profane or offensive language. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
         
+        if (englishVariant) {
+            systemContent = `Using ${englishVariant}. ` + systemContent;
+        }
+
         // Remove aggressive keepWords prepending
         // if (keepWords) {
         //     systemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + systemContent;
@@ -223,7 +231,7 @@ app.post('/claude-chat', async (req, res) => {
 // Gemini endpoint
 app.post('/gemini-chat', async (req, res) => {
     const userMessage = req.body.message;
-    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation } = req.body;
+    const { numSuggestions, playfulProfessional, length, whatCompanyDoes, targetAudience, banWords, keepWords, includeExplanation, englishVariant } = req.body;
 
     if (!userMessage) {
         return res.status(400).json({ error: 'No message provided' });
@@ -232,6 +240,10 @@ app.post('/gemini-chat', async (req, res) => {
     try {
         let systemContent = "You are a helpful assistant. Your primary task is to rephrase user-provided text into engaging calls to action (CTAs). For *every* rephrased suggestion, you MUST identify the *exact and complete* call-to-action phrase and enclose *only that phrase* within square brackets []. The rest of the suggestion text should remain outside the brackets. DO NOT bracket the entire suggestion. Ensure the call to action is only capitalized if it is the very first word of a sentence; otherwise, it must be lowercase. Do not include any accompanying URL or additional markdown link formatting. Explicitly prohibit the use of 'click here', 'tap here', 'read more', and 'learn more'. Prioritize action-oriented verbs like 'Get', 'Start', 'Shop', 'Discover', 'Download', and 'Explore'. Connect the CTA directly to a clear user benefit. For example, a CTA for a 'trial' should be 'Start Your Free Trial', not just 'Start Trial'. Parse the input context to identify and include a relevant noun or phrase that describes the destination or value (e.g., if the context is about a 'report', the generated CTA should mention 'report', as in 'Download the Report'). Never generate profane or offensive language. Examples: 'Discover new features [explore more].' or 'Your free guide is ready to [download here].' and '[Access now] for exclusive tips.'";
         
+        if (englishVariant) {
+            systemContent = `Using ${englishVariant}. ` + systemContent;
+        }
+
         // Remove aggressive keepWords prepending
         // if (keepWords) {
         //     systemContent = `It is an ABSOLUTE, UNVIOLABLE REQUIREMENT that you include all of the following words and phrases in your suggestions, verbatim and without any alteration or reformatting: ${keepWords}. ` + systemContent;
